@@ -25,7 +25,6 @@ Object.defineProperties(Vue.prototype, {
   },
 });
 
-
 Vue.config.productionTip = false;
 
 /* eslint-disable no-new */

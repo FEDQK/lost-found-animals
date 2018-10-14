@@ -70,10 +70,18 @@ export default {
       this.mapConfig.dynamicCenter.lng = event.lng();
     },
     getDistanceBetween(markerPosition) {
-      const center = { lat: () => this.mapConfig.dynamicCenter.lat,
-        lng: () => this.mapConfig.dynamicCenter.lng };
-      const marker = { lat: () => markerPosition.lat, lng: () => markerPosition.lng };
-      return this.google.maps.geometry.spherical.computeDistanceBetween(center, marker);
+      const center = {
+        lat: () => this.mapConfig.dynamicCenter.lat,
+        lng: () => this.mapConfig.dynamicCenter.lng,
+      };
+      const marker = {
+        lat: () => markerPosition.lat,
+        lng: () => markerPosition.lng,
+      };
+      return this.google.maps.geometry.spherical.computeDistanceBetween(
+        center,
+        marker,
+      );
     },
     getCurrentLocation() {
       if (navigator.geolocation) {
@@ -92,13 +100,16 @@ export default {
     },
     getAdvertsData() {
       let result = this.advertsData;
-      Object.keys(this.filterAdvert).forEach((key) => {
+      Object.keys(this.filterAdvert).forEach(key => {
         if (this.filterAdvert[key]) {
           switch (key) {
             case 'animalColor':
-              result = result.filter((advert) => {
-                if (this.filterAdvert[key].every(color =>
-                  advert.advertInfo[key].indexOf(color) >= 0)) {
+              result = result.filter(advert => {
+                if (
+                  this.filterAdvert[key].every(
+                    color => advert.advertInfo[key].indexOf(color) >= 0,
+                  )
+                ) {
                   return advert;
                 }
                 return false;
@@ -108,7 +119,9 @@ export default {
               result = this.filterRadius(result);
               break;
             default:
-              result = result.filter(advert => advert.advertInfo[key] === this.filterAdvert[key]);
+              result = result.filter(
+                advert => advert.advertInfo[key] === this.filterAdvert[key],
+              );
               break;
           }
         }
@@ -116,8 +129,11 @@ export default {
       return result;
     },
     filterRadius(advertsData) {
-      return advertsData.filter((advert) => {
-        if (this.getDistanceBetween(advert.position) / 1000 <= Number(this.filterAdvert.radius)) {
+      return advertsData.filter(advert => {
+        if (
+          this.getDistanceBetween(advert.position) / 1000 <=
+          Number(this.filterAdvert.radius)
+        ) {
           return advert;
         }
         return false;
@@ -128,8 +144,8 @@ export default {
 </script>
 
 <style scoped>
-  .main-map {
-    width: 100%;
-    height: 75%;
-  }
+.main-map {
+  width: 100%;
+  height: 75%;
+}
 </style>
