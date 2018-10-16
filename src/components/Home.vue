@@ -24,7 +24,7 @@ import MapInfoWindow from './MapInfoWindow';
 import AdvertFilter from './AdvertFilter';
 
 export default {
-  name: 'main-map',
+  name: 'home',
   components: {
     MarkerPopup,
     AdvertMarker,

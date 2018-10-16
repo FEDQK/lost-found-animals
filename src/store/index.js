@@ -1,11 +1,18 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import firebase from 'firebase';
+import AuthService from '../services/AuthService';
 
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
-    advertsData: localStorage.getItem('advertsData') ? JSON.parse(localStorage.getItem('advertsData')) : [],
+    user: null,
+    loading: false,
+    error: null,
+    advertsData: localStorage.getItem('advertsData')
+      ? JSON.parse(localStorage.getItem('advertsData'))
+      : [],
     visibleMarkerPopup: false,
     animalTypes: [
       { text: 'Собака', value: 'dog' },
@@ -75,86 +82,18 @@ const store = new Vuex.Store({
       radius: null,
     },
   },
-  actions: {
-    createAdvert({ commit }, markerData) {
-      const advert = {
-        id: String(Date.now()),
-        position: {
-          lat: markerData.position.lat(),
-          lng: markerData.position.lng(),
-        },
-        advertInfo: markerData.advertInfo,
-      };
-      commit('createAdvert', advert);
-    },
-    updateAdvert({ commit }, payload) {
-      const updateObj = {
-        id: payload.id,
-      };
-      if (payload.typeMarker) {
-        updateObj.typeMarker = payload.typeMarker;
-      }
-      if (payload.animalType) {
-        updateObj.animalType = payload.animalType;
-      }
-      if (payload.animalBreed) {
-        updateObj.animalBreed = payload.animalBreed;
-      }
-      if (payload.animalAge) {
-        updateObj.animalAge = payload.animalAge;
-      }
-      if (payload.animalColor) {
-        updateObj.animalColor = payload.animalColor;
-      }
-      if (payload.animalColoring) {
-        updateObj.animalColoring = payload.animalColoring;
-      }
-      if (payload.contactInfo) {
-        updateObj.contactInfo = payload.contactInfo;
-      }
-      if (payload.photoUrl) {
-        updateObj.photoUrl = payload.photoUrl;
-      }
-      commit('updateAdvert', updateObj);
-    },
-    deleteAdvert({ commit }, markerId) {
-      commit('deleteAdvert', markerId);
-    },
-    updateInfoWindow({ commit, getters }, payload) {
-      const updateObj = {};
-      if (payload.position) {
-        updateObj.position = payload.position;
-      }
-      if (payload.advertInfo) {
-        updateObj.content = payload.advertInfo;
-      }
-      if (Object.prototype.hasOwnProperty.call(payload, 'isOpen')) {
-        updateObj.isOpen = payload.isOpen;
-      }
-      if (payload.id) {
-        if (getters.infoWindow.markerId !== null && getters.infoWindow.markerId === payload.id) {
-          updateObj.isOpen = !getters.infoWindow.isOpen;
-        } else {
-          updateObj.isOpen = true;
-          updateObj.markerId = payload.id;
-        }
-      }
-      commit('updateInfoWindow', updateObj);
-    },
-    editAdvert({ commit }, payload) {
-      commit('editAdvert', payload);
-    },
-    updateAdvertFilter({ commit }, payload) {
-      commit('updateAdvertFilter', payload);
-    },
-  },
   mutations: {
+    setLoading(state, payload) {
+      state.loading = payload;
+    },
     createAdvert(state, payload) {
       state.advertsData.push(payload);
       localStorage.setItem('advertsData', JSON.stringify(state.advertsData));
     },
     updateAdvert(state, payload) {
-      const advertInfo = state.advertsData.find(advert => advert.id === payload.id).advertInfo;
+      const advertInfo = state.advertsData.find(
+        advert => advert.id === payload.id,
+      ).advertInfo;
       if (payload.typeMarker) {
         advertInfo.typeMarker = payload.typeMarker;
       }
@@ -214,6 +153,141 @@ const store = new Vuex.Store({
     updateAdvertFilter(state, payload) {
       state.filterAdvert[payload.typeFilter] = payload.value;
     },
+    setUser(state, payload) {
+      state.user = payload;
+    },
+    clearError(state) {
+      state.error = null;
+    },
+    setError(state, payload) {
+      state.error = payload;
+    },
+  },
+  actions: {
+    createAdvert({ commit }, markerData) {
+      const advert = {
+        id: String(Date.now()),
+        position: {
+          lat: markerData.position.lat(),
+          lng: markerData.position.lng(),
+        },
+        advertInfo: markerData.advertInfo,
+      };
+      commit('createAdvert', advert);
+    },
+    updateAdvert({ commit }, payload) {
+      const updateObj = {
+        id: payload.id,
+      };
+      if (payload.typeMarker) {
+        updateObj.typeMarker = payload.typeMarker;
+      }
+      if (payload.animalType) {
+        updateObj.animalType = payload.animalType;
+      }
+      if (payload.animalBreed) {
+        updateObj.animalBreed = payload.animalBreed;
+      }
+      if (payload.animalAge) {
+        updateObj.animalAge = payload.animalAge;
+      }
+      if (payload.animalColor) {
+        updateObj.animalColor = payload.animalColor;
+      }
+      if (payload.animalColoring) {
+        updateObj.animalColoring = payload.animalColoring;
+      }
+      if (payload.contactInfo) {
+        updateObj.contactInfo = payload.contactInfo;
+      }
+      if (payload.photoUrl) {
+        updateObj.photoUrl = payload.photoUrl;
+      }
+      commit('updateAdvert', updateObj);
+    },
+    deleteAdvert({ commit }, markerId) {
+      commit('deleteAdvert', markerId);
+    },
+    updateInfoWindow({ commit, getters }, payload) {
+      const updateObj = {};
+      if (payload.position) {
+        updateObj.position = payload.position;
+      }
+      if (payload.advertInfo) {
+        updateObj.content = payload.advertInfo;
+      }
+      if (Object.prototype.hasOwnProperty.call(payload, 'isOpen')) {
+        updateObj.isOpen = payload.isOpen;
+      }
+      if (payload.id) {
+        if (
+          getters.infoWindow.markerId !== null &&
+          getters.infoWindow.markerId === payload.id
+        ) {
+          updateObj.isOpen = !getters.infoWindow.isOpen;
+        } else {
+          updateObj.isOpen = true;
+          updateObj.markerId = payload.id;
+        }
+      }
+      commit('updateInfoWindow', updateObj);
+    },
+    editAdvert({ commit }, payload) {
+      commit('editAdvert', payload);
+    },
+    updateAdvertFilter({ commit }, payload) {
+      commit('updateAdvertFilter', payload);
+    },
+    autoSign({ commit }, payload) {
+      commit('setUser', { id: payload.uid });
+    },
+    signUserUp({ commit }, payload) {
+      commit('setLoading', true);
+      commit('clearError');
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(payload.email, payload.password)
+        .then(user => {
+          commit('setLoading', false);
+          const newUser = {
+            id: user.uid,
+          };
+          commit('setUser', newUser);
+        })
+        .catch(error => {
+          commit('setLoading', false);
+          commit('setError', error);
+          // eslint-disable-next-line
+          console.log(error);
+        });
+    },
+    signUserIn({ commit }, payload) {
+      commit('setLoading', true);
+      commit('clearError');
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(payload.email, payload.password)
+        .then(user => {
+          commit('setLoading', false);
+          const newUser = {
+            id: user.uid,
+          };
+          commit('setUser', newUser);
+        })
+        .catch(error => {
+          commit('setLoading', false);
+          commit('setError', error);
+          // eslint-disable-next-line
+          console.log(error);
+        });
+    },
+    logout({ commit }) {
+      AuthService.signOut();
+      commit('setUser', null);
+    },
+    clearError({ commit }) {
+      commit('clearError');
+    },
   },
   getters: {
     advertsData(state) {
@@ -235,18 +309,31 @@ const store = new Vuex.Store({
       return state.infoWindow;
     },
     nameAnimalTypes(state) {
-      return value => state.animalTypes.find(animalType => animalType.value === value);
+      return value =>
+        state.animalTypes.find(animalType => animalType.value === value);
     },
     nameAnimalBreeds(state) {
-      return (value, type) => state.animalBreeds[type]
-        .find(animalBreed => animalBreed.value === value);
+      return (value, type) =>
+        state.animalBreeds[type].find(
+          animalBreed => animalBreed.value === value,
+        );
     },
     nameAnimalColors(state) {
-      return arrayColors => arrayColors.map(color => state.animalColors.find(
-        animalColor => animalColor.value === color).text).join(', ');
+      return arrayColors =>
+        arrayColors
+          .map(
+            color =>
+              state.animalColors.find(
+                animalColor => animalColor.value === color,
+              ).text,
+          )
+          .join(', ');
     },
     nameAnimalColorings(state) {
-      return value => state.animalColorings.find(animalColoring => animalColoring.value === value);
+      return value =>
+        state.animalColorings.find(
+          animalColoring => animalColoring.value === value,
+        );
     },
     dataEditAdvert(state) {
       return state.dataEditAdvert;
@@ -254,9 +341,17 @@ const store = new Vuex.Store({
     filterAdvert(state) {
       return state.filterAdvert;
     },
+    user(state) {
+      return state.user;
+    },
+    loading(state) {
+      return state.loading;
+    },
+    error(state) {
+      return state.error;
+    },
   },
-  modules: {
-  },
+  modules: {},
 });
 
 export default store;

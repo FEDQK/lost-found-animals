@@ -1,11 +1,12 @@
 <template>
   <v-app>
-    <main-map></main-map>
+    <router-view></router-view>
+    <navigation></navigation>
   </v-app>
 </template>
 
 <script>
-import MainMap from './components/MainMap';
+import Navigation from './components/Navigation';
 
 export default {
   data() {
@@ -13,7 +14,7 @@ export default {
   },
   name: 'App',
   components: {
-    MainMap,
+    Navigation,
   },
 };
 </script>
