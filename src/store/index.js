@@ -10,6 +10,18 @@ const store = new Vuex.Store({
     user: null,
     loading: false,
     error: null,
+    navigationMenu: [
+      {
+        path: '/',
+        title: 'Map',
+        icon: 'map',
+      },
+      {
+        path: '/signin',
+        title: 'Authorization',
+        icon: 'person',
+      },
+    ],
     advertsData: localStorage.getItem('advertsData')
       ? JSON.parse(localStorage.getItem('advertsData'))
       : [],
@@ -156,6 +168,16 @@ const store = new Vuex.Store({
     setUser(state, payload) {
       state.user = payload;
     },
+    changeNavigationMenu(state, payload) {
+      const navigationTab2 = state.navigationMenu[1];
+      if (payload) {
+        navigationTab2.path = '/profile';
+        navigationTab2.title = 'Profile';
+      } else {
+        navigationTab2.path = '/signin';
+        navigationTab2.title = 'Authorization';
+      }
+    },
     clearError(state) {
       state.error = null;
     },
@@ -240,19 +262,38 @@ const store = new Vuex.Store({
     },
     autoSign({ commit }, payload) {
       commit('setUser', { id: payload.uid });
+      commit('changeNavigationMenu', true);
     },
-    signUserUp({ commit }, payload) {
+    createUser({ commit }) {
+      const userId = firebase.auth().currentUser.uid;
+      const newUser = {
+        id: userId,
+        role: 'user',
+      };
+      firebase
+        .database()
+        .ref(`users/${userId}`)
+        .set(newUser)
+        .then(() => {
+          commit('setLoading', false);
+          commit('setUser', newUser);
+          commit('changeNavigationMenu', true);
+        })
+        .catch(error => {
+          commit('setLoading', false);
+          commit('setError', error);
+          // eslint-disable-next-line
+          console.log(error);
+        });
+    },
+    signUserUp({ commit, dispatch }, payload) {
       commit('setLoading', true);
       commit('clearError');
       firebase
         .auth()
         .createUserWithEmailAndPassword(payload.email, payload.password)
-        .then(user => {
-          commit('setLoading', false);
-          const newUser = {
-            id: user.uid,
-          };
-          commit('setUser', newUser);
+        .then(() => {
+          dispatch('createUser');
         })
         .catch(error => {
           commit('setLoading', false);
@@ -273,6 +314,7 @@ const store = new Vuex.Store({
             id: user.uid,
           };
           commit('setUser', newUser);
+          commit('changeNavigationMenu', true);
         })
         .catch(error => {
           commit('setLoading', false);
@@ -284,6 +326,7 @@ const store = new Vuex.Store({
     logout({ commit }) {
       AuthService.signOut();
       commit('setUser', null);
+      commit('changeNavigationMenu', false);
     },
     clearError({ commit }) {
       commit('clearError');
@@ -343,6 +386,9 @@ const store = new Vuex.Store({
     },
     user(state) {
       return state.user;
+    },
+    navigationMenu(state) {
+      return state.navigationMenu;
     },
     loading(state) {
       return state.loading;

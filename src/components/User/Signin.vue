@@ -41,6 +41,9 @@
                         <v-icon light>cached</v-icon>
                        </span>
                     </v-btn>
+                    <v-btn to="signup">
+                      Sign up
+                    </v-btn>
                   </v-flex>
                 </v-layout>
               </form>

@@ -9,20 +9,25 @@ import App from './App';
 import AuthService from './services/AuthService';
 import store from './store';
 import router from './router';
+import Alert from './components/Shared/Alert';
 
 Vue.use(Vuetify, {
   iconfont: 'mdi',
   theme: {
-    main: '#292d33', // #E53935
-    active: '#24abeb', // #FFCDD2
+    main: '#292d33',
+    active: '#24abeb',
+    good: '#00c853',
+    bad: '#ed3838',
   },
 });
+
 Vue.use(VueGoogleMaps, {
   load: {
     libraries: 'geometry, places',
     key: 'AIzaSyDzVu6xPSu-1otbwW54WrDBFyLqWT1u5uY',
   },
 });
+Vue.component('app-alert', Alert);
 
 const EventBus = new Vue();
 

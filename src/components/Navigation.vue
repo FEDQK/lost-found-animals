@@ -1,7 +1,7 @@
 <template>
   <v-bottom-nav :value="true" class="main-menu" color="main">
     <v-btn
-      v-for="(item, index) in menuItems"
+      v-for="(item, index) in navigationMenu"
       :to="item.path"
       :key="index"
       exact>
@@ -19,24 +19,14 @@
 <script>
 export default {
   data() {
-    return {
-      menuItems: [
-        {
-          path: '/',
-          title: 'Map',
-          icon: 'map',
-        },
-        {
-          path: '/signin',
-          title: 'Signin',
-          icon: 'person',
-        },
-      ],
-    };
+    return {};
   },
   computed: {
     user() {
       return this.$store.getters.user;
+    },
+    navigationMenu() {
+      return this.$store.getters.navigationMenu;
     },
   },
   methods: {
