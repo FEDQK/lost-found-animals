@@ -7,18 +7,24 @@ Vue.use(Vuex);
 
 const store = new Vuex.Store({
   state: {
+    locale: 'ua',
+    languages: [
+      { value: 'ua', text: 'ua' },
+      { value: 'en', text: 'en' },
+      { value: 'ru', text: 'ru' },
+    ],
     user: null,
     loading: false,
     error: null,
     navigationMenu: [
       {
         path: '/',
-        title: 'Map',
+        title: 'map',
         icon: 'map',
       },
       {
         path: '/signin',
-        title: 'Authorization',
+        title: 'authorization',
         icon: 'person',
       },
     ],
@@ -172,11 +178,14 @@ const store = new Vuex.Store({
       const navigationTab2 = state.navigationMenu[1];
       if (payload) {
         navigationTab2.path = '/profile';
-        navigationTab2.title = 'Profile';
+        navigationTab2.title = 'profile';
       } else {
         navigationTab2.path = '/signin';
-        navigationTab2.title = 'Authorization';
+        navigationTab2.title = 'authorization';
       }
+    },
+    setLocale(state, payload) {
+      state.locale = payload;
     },
     clearError(state) {
       state.error = null;
@@ -323,6 +332,9 @@ const store = new Vuex.Store({
           console.log(error);
         });
     },
+    updateLocale({ commit }, payload) {
+      commit('setLocale', payload);
+    },
     logout({ commit }) {
       AuthService.signOut();
       commit('setUser', null);
@@ -333,6 +345,12 @@ const store = new Vuex.Store({
     },
   },
   getters: {
+    locale(state) {
+      return state.locale;
+    },
+    languages(state) {
+      return state.languages;
+    },
     advertsData(state) {
       return state.advertsData;
     },

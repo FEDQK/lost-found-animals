@@ -1,3 +1,20 @@
+<i18n>
+  {
+    "en": {
+      "labelEmail": "Email",
+      "labelPassword": "Password",
+      "buttonSignin": "Sign in",
+      "buttonSignup": "Sign up"
+    },
+    "ua": {
+      "labelEmail": "Електронна пошта",
+      "labelPassword": "Пароль",
+      "buttonSignin": "Увійти",
+      "buttonSignup": "Зареєструватися"
+    }
+  }
+</i18n>
+
 <template>
   <v-container>
     <v-layout row v-if="error">
@@ -15,7 +32,7 @@
                   <v-flex xs12>
                     <v-text-field
                       name="email"
-                      label="Mail"
+                      :label="$t('labelEmail')"
                       id="email"
                       v-model="email"
                       type="email"
@@ -26,7 +43,7 @@
                   <v-flex xs12>
                     <v-text-field
                       name="password"
-                      label="Password"
+                      :label="$t('labelPassword')"
                       id="password"
                       v-model="password"
                       type="password"
@@ -36,13 +53,13 @@
                 <v-layout row>
                   <v-flex xs12>
                     <v-btn type="submit" :disabled="loading" :loading="loading">
-                      Sign in
+                      {{$t('buttonSignin')}}
                        <span slot="loader" class="custom-loader">
                         <v-icon light>cached</v-icon>
                        </span>
                     </v-btn>
                     <v-btn to="signup">
-                      Sign up
+                      {{$t('buttonSignup')}}
                     </v-btn>
                   </v-flex>
                 </v-layout>

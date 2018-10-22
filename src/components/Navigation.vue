@@ -1,13 +1,46 @@
+<i18n>
+  {
+    "en": {
+      "map": "Map",
+      "authorization": "Authorization",
+      "profile": "Profile",
+      "ua": "Ukrainian",
+      "ru": "Russian",
+      "en": "English"
+    },
+    "ua": {
+      "map": "Карта",
+      "authorization": "Авторизація",
+      "profile": "Профіль",
+      "ua": "Українська",
+      "ru": "Російська",
+      "en": "Анлійська"
+    }
+  }
+</i18n>
+
 <template>
   <v-bottom-nav :value="true" class="main-menu" color="main">
-    <v-btn
-      v-for="(item, index) in navigationMenu"
-      :to="item.path"
-      :key="index"
-      exact>
-      <span class="white--text">{{ item.title }}</span>
-      <v-icon class="white--text">{{ item.icon }}</v-icon>
-    </v-btn>
+    <v-select
+      class="lang-selector"
+      :items="languages"
+      v-model="locale"
+      hide-details
+      hide-selected
+      color="active"
+      prepend-icon="language"
+      :dark="true"
+    ></v-select>
+    <v-layout justify-center>
+      <v-btn
+        v-for="(item, index) in navigationMenu"
+        :to="item.path"
+        :key="index"
+        exact>
+        <span class="white--text">{{ $t(item.title) }}</span>
+        <v-icon class="white--text">{{ item.icon }}</v-icon>
+      </v-btn>
+    </v-layout>
     <v-btn v-show="user" class="logout" @click="onLogout">
       <v-icon class="white--text" >
         exit_to_app
@@ -28,6 +61,21 @@ export default {
     navigationMenu() {
       return this.$store.getters.navigationMenu;
     },
+    locale: {
+      get() {
+        return this.$store.getters.locale;
+      },
+      set(newLocale) {
+        this.$i18n.locale = newLocale;
+        this.$store.dispatch('updateLocale', newLocale);
+      },
+    },
+    languages() {
+      return this.$store.getters.languages.map(languageObj => ({
+        value: languageObj.value,
+        text: this.$t(languageObj.text),
+      }));
+    },
   },
   methods: {
     onLogout() {
@@ -39,11 +87,13 @@ export default {
 </script>
 
 <style scoped>
-.logout {
-  position: absolute;
-  width: auto;
-  right: 0;
-  color: #fff;
-  opacity: 0.8;
+.lang-selector {
+  max-width: 145px;
+  padding: 0 0 0 10px;
+}
+
+.lang-selector >>> .input-group__append-icon,
+.lang-selector >>> .input-group__details {
+  display: none;
 }
 </style>

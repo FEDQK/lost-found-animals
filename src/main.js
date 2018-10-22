@@ -3,6 +3,7 @@
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
 import Vue from 'vue';
 import Vuetify from 'vuetify';
+import VueI18n from 'vue-i18n';
 import 'vuetify/dist/vuetify.min.css';
 import * as VueGoogleMaps from 'vue2-google-maps';
 import App from './App';
@@ -27,9 +28,16 @@ Vue.use(VueGoogleMaps, {
     key: 'AIzaSyDzVu6xPSu-1otbwW54WrDBFyLqWT1u5uY',
   },
 });
+
+Vue.use(VueI18n);
 Vue.component('app-alert', Alert);
 
 const EventBus = new Vue();
+const i18n = new VueI18n({
+  locale: store.getters.locale,
+  fallbackLocale: 'en',
+  messages: {},
+});
 
 Object.defineProperties(Vue.prototype, {
   $bus: {
@@ -48,6 +56,7 @@ new Vue({
   store,
   components: { App },
   template: '<App/>',
+  i18n,
   created() {
     AuthService.firebase.auth().onAuthStateChanged(user => {
       if (user) {
