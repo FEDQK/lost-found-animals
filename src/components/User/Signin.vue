@@ -10,7 +10,13 @@
       "labelEmail": "Електронна пошта",
       "labelPassword": "Пароль",
       "buttonSignin": "Увійти",
-      "buttonSignup": "Зареєструватися"
+      "buttonSignup": "Реєстрація"
+    },
+    "ru": {
+      "labelEmail": "Электронная почта",
+      "labelPassword": "Пароль",
+      "buttonSignin": "Войти",
+      "buttonSignup": "Регистрация"
     }
   }
 </i18n>

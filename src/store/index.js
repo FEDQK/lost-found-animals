@@ -9,8 +9,8 @@ const store = new Vuex.Store({
   state: {
     locale: 'ua',
     languages: [
-      { value: 'ua', text: 'ua' },
       { value: 'en', text: 'en' },
+      { value: 'ua', text: 'ua' },
       { value: 'ru', text: 'ru' },
     ],
     user: null,

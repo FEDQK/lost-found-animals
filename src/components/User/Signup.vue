@@ -1,3 +1,26 @@
+<i18n>
+  {
+    "en": {
+      "labelEmail": "Email",
+      "labelPassword": "Password",
+      "labelConfirmPassword": "Confirm password",
+      "buttonSignup": "Sign up"
+    },
+    "ua": {
+      "labelEmail": "Електронна пошта",
+      "labelPassword": "Пароль",
+      "labelConfirmPassword": "Підтвердити пароль",
+      "buttonSignup": "Реєстрація"
+    },
+    "ru": {
+      "labelEmail": "Электронная почта",
+      "labelPassword": "Пароль",
+      "labelConfirmPassword": "Подтвердите пароль",
+      "buttonSignup": "Регистрация"
+    }
+  }
+</i18n>
+
 <template>
   <v-container>
     <v-layout row v-if="error">
@@ -15,7 +38,7 @@
                   <v-flex xs12>
                     <v-text-field
                       name="email"
-                      label="Mail"
+                      :label="$t('labelEmail')"
                       id="email"
                       v-model="email"
                       type="email"
@@ -26,7 +49,7 @@
                   <v-flex xs12>
                     <v-text-field
                       name="password"
-                      label="Password"
+                      :label="$t('labelPassword')"
                       id="password"
                       v-model="password"
                       type="password"
@@ -37,17 +60,18 @@
                   <v-flex xs12>
                     <v-text-field
                       name="confirmPassword"
-                      label="Confirm Password"
+                      :label="$t('labelConfirmPassword')"
                       id="confirmPassword"
                       v-model="confirmPassword"
                       type="password"
+                      required
                       :rules="[comparePasswords]"></v-text-field>
                   </v-flex>
                 </v-layout>
                 <v-layout row>
                   <v-flex xs12>
                     <v-btn type="submit" :disabled="loading" :loading="loading">
-                      Sign up
+                      {{ $t('buttonSignup') }}
                        <span slot="loader" class="custom-loader">
                         <v-icon light>cached</v-icon>
                        </span>

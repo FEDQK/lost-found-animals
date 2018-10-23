@@ -4,17 +4,25 @@
       "map": "Map",
       "authorization": "Authorization",
       "profile": "Profile",
-      "ua": "Ukrainian",
-      "ru": "Russian",
+      "ua": "Український",
+      "ru": "Русский",
       "en": "English"
     },
     "ua": {
       "map": "Карта",
       "authorization": "Авторизація",
       "profile": "Профіль",
-      "ua": "Українська",
-      "ru": "Російська",
-      "en": "Анлійська"
+      "ua": "Український",
+      "ru": "Русский",
+      "en": "English"
+    },
+    "ru": {
+      "map": "Карта",
+      "authorization": "Авторизация",
+      "profile": "Профиль",
+      "ua": "Український",
+      "ru": "Русский",
+      "en": "English"
     }
   }
 </i18n>
@@ -66,7 +74,7 @@ export default {
         return this.$store.getters.locale;
       },
       set(newLocale) {
-        this.$i18n.locale = newLocale;
+        this.$root.$i18n.locale = newLocale;
         this.$store.dispatch('updateLocale', newLocale);
       },
     },
@@ -95,5 +103,9 @@ export default {
 .lang-selector >>> .input-group__append-icon,
 .lang-selector >>> .input-group__details {
   display: none;
+}
+
+.logout {
+  width: auto;
 }
 </style>

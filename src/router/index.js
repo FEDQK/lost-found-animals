@@ -5,7 +5,6 @@ import Signin from '@/components/User/Signin';
 import Signup from '@/components/User/Signup';
 import Profile from '@/components/User/Profile';
 import AuthGuard from './auth-guard';
-import CheckAuth from './check-auth';
 
 Vue.use(Router);
 
@@ -38,13 +37,11 @@ export default new Router({
       path: '/signup',
       name: 'Signup',
       component: Signup,
-      beforeEnter: CheckAuth,
     },
     {
       path: '/signin',
       name: 'Signin',
       component: Signin,
-      beforeEnter: CheckAuth,
     },
   ],
   mode: 'history',
