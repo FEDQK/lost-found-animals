@@ -14,44 +14,44 @@
               </v-flex>
               <v-flex xs12>
                 <v-select
-                  :items="animalTypes"
-                  v-model="animalType"
+                  :items="petTypes"
+                  v-model="petType"
                   label="Вид тварини"
                   required
-                  :rules="animalTypeRules"
-                  @change="onChangeAnimalType"
+                  :rules="petTypeRules"
+                  @change="onChangePetType"
                 ></v-select>
               </v-flex>
-              <v-flex xs12 v-show="animalType">
+              <v-flex xs12 v-show="petType">
                 <v-select
-                  :items="animalBreeds[animalType]"
-                  v-model="animalBreed"
+                  :items="petBreeds"
+                  v-model="petBreed"
                   label="Порода тварини"
                   required
-                  :rules="animalBreedRules"
+                  :rules="petBreedRules"
                 ></v-select>
               </v-flex>
               <v-flex>
-                <v-text-field required :rules="animalAgeRules" :mask="maskAnimalAge" v-model="animalAge" label="Вік тварини" suffix="рік"></v-text-field>
+                <v-text-field required :rules="petAgeRules" :mask="maskPetAge" v-model="petAge" label="Вік тварини" suffix="рік"></v-text-field>
               </v-flex>
               <v-flex xs12>
                 <v-select
-                  :items="animalColors"
-                  v-model="animalColor"
+                  :items="petColors"
+                  v-model="petColor"
                   label="Колір тварини"
                   required
                   multiple
                   chips
-                  :rules="animalColorRules"
+                  :rules="petColorRules"
                 ></v-select>
               </v-flex>
               <v-flex xs12>
                 <v-select
-                  :items="animalColorings"
-                  v-model="animalColoring"
+                  :items="petColorings"
+                  v-model="petColoring"
                   label="Окраса тварини"
                   required
-                  :rules="animalColoringRules"
+                  :rules="petColoringRules"
                 ></v-select>
               </v-flex>
               <v-flex xs12>
@@ -93,14 +93,14 @@ export default {
     this.$bus.$on('editAdvert', () => {
       const dataEditAdvert = this.$store.getters.dataEditAdvert;
       if (dataEditAdvert) {
-        this.animalType = dataEditAdvert.advertInfo.animalType;
-        this.animalBreed = dataEditAdvert.advertInfo.animalBreed;
-        this.animalColor = dataEditAdvert.advertInfo.animalColor;
-        this.animalColoring = dataEditAdvert.advertInfo.animalColoring;
+        this.petType = dataEditAdvert.advertInfo.petType;
+        this.petBreed = dataEditAdvert.advertInfo.petBreed;
+        this.petColor = dataEditAdvert.advertInfo.petColor;
+        this.petColoring = dataEditAdvert.advertInfo.petColoring;
         this.typeMarker = dataEditAdvert.advertInfo.typeMarker;
         this.photoUrl = dataEditAdvert.advertInfo.photoUrl;
         this.contactInfo = dataEditAdvert.advertInfo.contactInfo;
-        this.animalAge = dataEditAdvert.advertInfo.animalAge;
+        this.petAge = dataEditAdvert.advertInfo.petAge;
         this.editAdvertId = dataEditAdvert.id;
         this.isEditMode = true;
       }
@@ -108,56 +108,46 @@ export default {
   },
   data() {
     return {
-      animalType: null,
-      animalBreed: null,
-      animalColor: [],
-      animalColoring: null,
+      petBreeds: [],
+      petType: null,
+      petBreed: null,
+      petColor: [],
+      petColoring: null,
       typeMarker: 'find',
       photoUrl: '',
       contactInfo: '',
-      animalAge: null,
+      petAge: null,
       isValidForm: true,
-      maskAnimalAge: '##',
+      maskPetAge: '##',
       isEditMode: false,
       editAdvertId: null,
-      animalAgeRules: [
-        v => !!v || 'Вік тварини обов\'язковий',
-      ],
-      contactInfoRules: [
-        v => !!v || 'Контактна інформація обов\'язкова',
-      ],
-      photoUrlRules: [
-        v => !!v || 'Фотографія обов\'язкова',
-      ],
-      animalTypeRules: [
-        v => !!v || 'Вид тварини обов\'язковий',
-      ],
-      animalBreedRules: [
-        v => !!v || 'Порода тварини обов\'язкова',
-      ],
-      animalColorRules: [
-        v => v.length > 0 || 'Колір тварини обов\'язковий',
-      ],
-      animalColoringRules: [
-        v => !!v || 'Окраса тварини обов\'язкова',
-      ],
+      petAgeRules: [v => !!v || "Вік тварини обов'язковий"],
+      contactInfoRules: [v => !!v || "Контактна інформація обов'язкова"],
+      photoUrlRules: [v => !!v || "Фотографія обов'язкова"],
+      petTypeRules: [v => !!v || "Вид тварини обов'язковий"],
+      petBreedRules: [v => !!v || "Порода тварини обов'язкова"],
+      petColorRules: [v => v.length > 0 || "Колір тварини обов'язковий"],
+      petColoringRules: [v => !!v || "Окраса тварини обов'язкова"],
     };
   },
   computed: {
     active() {
       return this.$store.state.visibleMarkerPopup;
     },
-    animalTypes() {
-      return this.$store.getters.animalTypes;
+    locale() {
+      return this.$store.state.locale;
     },
-    animalBreeds() {
-      return this.$store.getters.animalBreeds;
+    petTypes() {
+      return this.$store.getters.dataOfTableForSelect('petTypes');
     },
-    animalColors() {
-      return this.$store.getters.animalColors;
+    // petBreeds() {
+    //   return this.$store.getters.dataPetBreedsForSelect(this.petType);
+    // },
+    petColors() {
+      return this.$store.getters.dataOfTableForSelect('petColors');
     },
-    animalColorings() {
-      return this.$store.getters.animalColorings;
+    petColorings() {
+      return this.$store.getters.dataOfTableForSelect('petColorings');
     },
   },
   methods: {
@@ -166,11 +156,11 @@ export default {
         const newMarker = {
           advertInfo: {
             typeMarker: this.typeMarker,
-            animalType: this.animalType,
-            animalBreed: this.animalBreed,
-            animalAge: String(Number(this.animalAge)),
-            animalColor: this.animalColor,
-            animalColoring: this.animalColoring,
+            petType: this.petType,
+            petBreed: this.petBreed,
+            petAge: String(Number(this.petAge)),
+            petColor: this.petColor,
+            petColoring: this.petColoring,
             contactInfo: this.contactInfo,
             photoUrl: this.photoUrl,
           },
@@ -185,11 +175,11 @@ export default {
         const newAdvertInfo = {
           id: this.editAdvertId,
           typeMarker: this.typeMarker,
-          animalType: this.animalType,
-          animalBreed: this.animalBreed,
-          animalAge: String(Number(this.animalAge)),
-          animalColor: this.animalColor,
-          animalColoring: this.animalColoring,
+          petType: this.petType,
+          petBreed: this.petBreed,
+          petAge: String(Number(this.petAge)),
+          petColor: this.petColor,
+          petColoring: this.petColoring,
           contactInfo: this.contactInfo,
           photoUrl: this.photoUrl,
         };
@@ -202,8 +192,10 @@ export default {
       this.typeMarker = 'find';
       this.$store.commit('showMarkerPopup', false);
     },
-    onChangeAnimalType() {
-      this.animalBreed = null;
+    onChangePetType(value) {
+      if (value !== this.petType) {
+        this.petBreed = null;
+      }
     },
     onCancelEdit() {
       this.hidePopup();
@@ -212,24 +204,29 @@ export default {
       }, 200);
     },
   },
+  watch: {
+    petType(value) {
+      this.petBreeds = this.$store.getters.dataPetBreedsForSelect(this.petType);
+    },
+  },
 };
 </script>
 
 <style scoped>
-  .headline {
-    padding-bottom: 0;
-    justify-content: center;
-  }
-  .type-marker {
-    padding-top: 0;
-  }
-  .type-marker >>> label {
-    color: rgba(0,0,0,.87);
-  }
-  .form-buttons {
-    padding: 0 16px 16px;
-  }
-  .content {
-    padding-bottom: 0;
-  }
+.headline {
+  padding-bottom: 0;
+  justify-content: center;
+}
+.type-marker {
+  padding-top: 0;
+}
+.type-marker >>> label {
+  color: rgba(0, 0, 0, 0.87);
+}
+.form-buttons {
+  padding: 0 16px 16px;
+}
+.content {
+  padding-bottom: 0;
+}
 </style>

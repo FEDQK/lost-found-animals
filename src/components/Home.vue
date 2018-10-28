@@ -103,7 +103,7 @@ export default {
       Object.keys(this.filterAdvert).forEach(key => {
         if (this.filterAdvert[key]) {
           switch (key) {
-            case 'animalColor':
+            case 'petColor':
               result = result.filter(advert => {
                 if (
                   this.filterAdvert[key].every(

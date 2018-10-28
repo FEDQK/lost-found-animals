@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import firebase from 'firebase';
+import * as firebase from 'firebase';
 import AuthService from '../services/AuthService';
 
 Vue.use(Vuex);
@@ -28,61 +28,12 @@ const store = new Vuex.Store({
         icon: 'person',
       },
     ],
-    advertsData: localStorage.getItem('advertsData')
-      ? JSON.parse(localStorage.getItem('advertsData'))
-      : [],
+    advertsData: [],
     visibleMarkerPopup: false,
-    animalTypes: [
-      { text: 'Собака', value: 'dog' },
-      { text: 'Кіт', value: 'cat' },
-      { text: 'Папуга', value: 'parrot' },
-    ],
-    animalBreeds: {
-      dog: [
-        { text: 'Німецька вівчарка', value: 'german-shepherd' },
-        { text: 'Лабрадор-ретривер', value: 'labrador-retriever' },
-        { text: 'Англійський бульдог', value: 'english-bulldog' },
-        { text: 'Пудель', value: 'poodle' },
-        { text: 'Бігль', value: 'beagle' },
-        { text: 'Чихуахуа', value: 'chihuahua' },
-        { text: 'Мопс', value: 'pug' },
-        { text: 'Ротвейлер', value: 'rottweiler' },
-      ],
-      cat: [
-        { text: 'Персидська', value: 'persian' },
-        { text: 'Сіамська', value: 'siamese' },
-        { text: 'Мейн Кун', value: 'maine-coon' },
-        { text: 'Абіссінська', value: 'abyssinian' },
-        { text: 'Регдолли', value: 'regdolls' },
-        { text: 'Екзот', value: 'exodus' },
-        { text: 'Сфінкс', value: 'sphinx' },
-      ],
-      parrot: [
-        { text: 'Хвилястий', value: 'wavy' },
-        { text: 'Нерозлучник', value: 'not-solvent' },
-        { text: 'Кореллі', value: 'corelli' },
-        { text: 'Ожереловий', value: 'necklace' },
-        { text: 'Амазон', value: 'amazon' },
-        { text: 'Какаду', value: 'cockatoo' },
-      ],
-    },
-    animalColors: [
-      { text: 'Чорний', value: 'black' },
-      { text: 'Сірий', value: 'gray' },
-      { text: 'Рудий', value: 'red' },
-      { text: 'Білий', value: 'white' },
-      { text: 'Коричневий', value: 'brown' },
-      { text: 'Червоний', value: 'red' },
-      { text: 'Блакитний', value: 'blue' },
-      { text: 'Жовтий', value: 'yellow' },
-      { text: 'Зелений', value: 'green' },
-    ],
-    animalColorings: [
-      { text: 'Суцільний', value: 'solid' },
-      { text: 'Смугастий таббі', value: 'striped-tabby' },
-      { text: 'Мармуровий таббі', value: 'tabby-marble' },
-      { text: 'Плямистий таббі', value: 'spotted-tabby' },
-    ],
+    petTypes: [],
+    petBreeds: [],
+    petColors: [],
+    petColorings: [],
     infoWindow: {
       position: null,
       content: null,
@@ -92,17 +43,29 @@ const store = new Vuex.Store({
     dataEditAdvert: null,
     filterAdvert: {
       typeMarker: null,
-      animalType: null,
-      animalBreed: null,
-      animalAge: null,
-      animalColor: null,
-      animalColoring: null,
+      petType: null,
+      petBreed: null,
+      petAge: null,
+      petColor: null,
+      petColoring: null,
       radius: null,
     },
   },
   mutations: {
     setLoading(state, payload) {
       state.loading = payload;
+    },
+    setLoadedPetTypes(state, payload) {
+      state.petTypes = payload;
+    },
+    setLoadedPetBreeds(state, payload) {
+      state.petBreeds = payload;
+    },
+    setLoadedPetColors(state, payload) {
+      state.petColors = payload;
+    },
+    setLoadedPetColorings(state, payload) {
+      state.petColorings = payload;
     },
     createAdvert(state, payload) {
       state.advertsData.push(payload);
@@ -115,20 +78,20 @@ const store = new Vuex.Store({
       if (payload.typeMarker) {
         advertInfo.typeMarker = payload.typeMarker;
       }
-      if (payload.animalType) {
-        advertInfo.animalType = payload.animalType;
+      if (payload.petType) {
+        advertInfo.petType = payload.petType;
       }
-      if (payload.animalBreed) {
-        advertInfo.animalBreed = payload.animalBreed;
+      if (payload.petBreed) {
+        advertInfo.petBreed = payload.petBreed;
       }
-      if (payload.animalAge) {
-        advertInfo.animalAge = payload.animalAge;
+      if (payload.petAge) {
+        advertInfo.petAge = payload.petAge;
       }
-      if (payload.animalColor) {
-        advertInfo.animalColor = payload.animalColor;
+      if (payload.petColor) {
+        advertInfo.petColor = payload.petColor;
       }
-      if (payload.animalColoring) {
-        advertInfo.animalColoring = payload.animalColoring;
+      if (payload.petColoring) {
+        advertInfo.petColoring = payload.petColoring;
       }
       if (payload.contactInfo) {
         advertInfo.contactInfo = payload.contactInfo;
@@ -195,6 +158,70 @@ const store = new Vuex.Store({
     },
   },
   actions: {
+    loadPetTypes({ commit }) {
+      commit('setLoading', true);
+      firebase
+        .database()
+        .ref('pet_types')
+        .once('value')
+        .then(data => {
+          commit('setLoadedPetTypes', this.getDataOfTable(data));
+          commit('setLoading', false);
+        })
+        .catch(err => {
+          // eslint-disable-next-line
+          console.log(err);
+          commit('setLoading', false);
+        });
+    },
+    loadPetBreeds({ commit }) {
+      commit('setLoading', true);
+      firebase
+        .database()
+        .ref('pet_breeds')
+        .once('value')
+        .then(data => {
+          commit('setLoadedPetBreeds', this.getDataOfTable(data));
+          commit('setLoading', false);
+        })
+        .catch(err => {
+          // eslint-disable-next-line
+          console.log(err);
+          commit('setLoading', false);
+        });
+    },
+    loadPetColors({ commit }) {
+      commit('setLoading', true);
+      firebase
+        .database()
+        .ref('pet_colors')
+        .once('value')
+        .then(data => {
+          commit('setLoadedPetColors', this.getDataOfTable(data));
+          commit('setLoading', false);
+        })
+        .catch(err => {
+          // eslint-disable-next-line
+          console.log(err);
+          commit('setLoading', false);
+        });
+    },
+    loadPetColorings({ commit }) {
+      commit('setLoading', true);
+      firebase
+        .database()
+        .ref('pet_colorings')
+        .once('value')
+        .then(data => {
+          commit('setLoadedPetColorings', this.getDataOfTable(data));
+          commit('setLoading', false);
+        })
+        .catch(err => {
+          // eslint-disable-next-line
+          console.log(err);
+          commit('setLoading', false);
+        });
+    },
     createAdvert({ commit }, markerData) {
       const advert = {
         id: String(Date.now()),
@@ -213,20 +240,20 @@ const store = new Vuex.Store({
       if (payload.typeMarker) {
         updateObj.typeMarker = payload.typeMarker;
       }
-      if (payload.animalType) {
-        updateObj.animalType = payload.animalType;
+      if (payload.petType) {
+        updateObj.petType = payload.petType;
       }
-      if (payload.animalBreed) {
-        updateObj.animalBreed = payload.animalBreed;
+      if (payload.petBreed) {
+        updateObj.petBreed = payload.petBreed;
       }
-      if (payload.animalAge) {
-        updateObj.animalAge = payload.animalAge;
+      if (payload.petAge) {
+        updateObj.petAge = payload.petAge;
       }
-      if (payload.animalColor) {
-        updateObj.animalColor = payload.animalColor;
+      if (payload.petColor) {
+        updateObj.petColor = payload.petColor;
       }
-      if (payload.animalColoring) {
-        updateObj.animalColoring = payload.animalColoring;
+      if (payload.petColoring) {
+        updateObj.petColoring = payload.petColoring;
       }
       if (payload.contactInfo) {
         updateObj.contactInfo = payload.contactInfo;
@@ -354,47 +381,56 @@ const store = new Vuex.Store({
     advertsData(state) {
       return state.advertsData;
     },
-    animalTypes(state) {
-      return state.animalTypes;
+    petTypes(state) {
+      return state.petTypes;
     },
-    animalBreeds(state) {
-      return state.animalBreeds;
+    petBreeds(state) {
+      return state.petBreeds;
     },
-    animalColors(state) {
-      return state.animalColors;
+    petColors(state) {
+      return state.petColors;
     },
-    animalColorings(state) {
-      return state.animalColorings;
+    petColorings(state) {
+      return state.petColorings;
     },
     infoWindow(state) {
       return state.infoWindow;
     },
-    nameAnimalTypes(state) {
-      return value =>
-        state.animalTypes.find(animalType => animalType.value === value);
+    dataOfTableForSelect(state) {
+      return nameTable =>
+        state[nameTable].map(dataTable => ({
+          value: dataTable.id,
+          text: dataTable[state.locale].name,
+        }));
     },
-    nameAnimalBreeds(state) {
+    dataPetBreedsForSelect(state) {
+      return petType =>
+        state.petBreeds
+          .filter(dataPetBreed => dataPetBreed.id_pet_type === petType)
+          .map(dataPetBreed => ({
+            value: dataPetBreed.id,
+            text: dataPetBreed[state.locale].name,
+          }));
+    },
+    namePetTypes(state) {
+      return value => state.petTypes.find(petType => petType.id === value);
+    },
+    namePetBreeds(state) {
       return (value, type) =>
-        state.animalBreeds[type].find(
-          animalBreed => animalBreed.value === value,
-        );
+        state.petBreeds[type].find(petBreed => petBreed.value === value);
     },
-    nameAnimalColors(state) {
+    namePetColors(state) {
       return arrayColors =>
         arrayColors
           .map(
             color =>
-              state.animalColors.find(
-                animalColor => animalColor.value === color,
-              ).text,
+              state.petColors.find(petColor => petColor.value === color).text,
           )
           .join(', ');
     },
-    nameAnimalColorings(state) {
+    namePetColorings(state) {
       return value =>
-        state.animalColorings.find(
-          animalColoring => animalColoring.value === value,
-        );
+        state.petColorings.find(petColoring => petColoring.value === value);
     },
     dataEditAdvert(state) {
       return state.dataEditAdvert;
@@ -417,5 +453,14 @@ const store = new Vuex.Store({
   },
   modules: {},
 });
+
+store.getDataOfTable = data => {
+  const dbResult = data.val();
+  const dataTable = [];
+  Object.keys(dbResult).forEach(dataKey => {
+    dataTable.push(dbResult[dataKey]);
+  });
+  return dataTable;
+};
 
 export default store;

@@ -10,38 +10,38 @@
     </v-flex>
     <v-flex xs12>
       <v-select
-        :items="animalTypes"
-        v-model="filterAdvert.animalType"
+        :items="petTypes"
+        v-model="filterAdvert.petType"
         label="Вид тварини"
-        @change="onUpdateFilter('animalType', $event)"
+        @change="onUpdateFilter('petType', $event)"
       ></v-select>
     </v-flex>
-    <v-flex xs12 v-show="filterAdvert.animalType">
+    <v-flex xs12 v-show="filterAdvert.petType">
       <v-select
-        :items="animalBreeds[filterAdvert.animalType]"
-        v-model="filterAdvert.animalBreed"
+        :items="petBreeds[filterAdvert.petType]"
+        v-model="filterAdvert.petBreed"
         label="Порода тварини"
-        @change="onUpdateFilter('animalBreed', $event)"
+        @change="onUpdateFilter('petBreed', $event)"
       ></v-select>
     </v-flex>
     <v-flex xs12>
-      <v-text-field :mask="maskAnimalAge" v-model="filterAdvert.animalAge" label="Вік тварини" suffix="рік" @change="onUpdateFilter('animalAge', $event)"></v-text-field>
+      <v-text-field :mask="maskPetAge" v-model="filterAdvert.petAge" label="Вік тварини" suffix="рік" @change="onUpdateFilter('petAge', $event)"></v-text-field>
     </v-flex>
     <v-flex xs12>
       <v-select
-        :items="animalColors"
-        v-model="filterAdvert.animalColor"
+        :items="petColors"
+        v-model="filterAdvert.petColor"
         label="Колір тварини"
         multiple
-        @change="onUpdateFilter('animalColor', $event)"
+        @change="onUpdateFilter('petColor', $event)"
       ></v-select>
     </v-flex>
     <v-flex xs12>
       <v-select
-        :items="animalColorings"
-        v-model="filterAdvert.animalColoring"
+        :items="petColorings"
+        v-model="filterAdvert.petColoring"
         label="Окраса тварини"
-        @change="onUpdateFilter('animalColoring', $event)"
+        @change="onUpdateFilter('petColoring', $event)"
       ></v-select>
     </v-flex>
     <v-flex xs12>
@@ -54,17 +54,17 @@
 export default {
   name: 'advert-filter',
   computed: {
-    animalTypes() {
-      return this.$store.getters.animalTypes;
+    petTypes() {
+      return this.$store.getters.petTypes;
     },
-    animalBreeds() {
-      return this.$store.getters.animalBreeds;
+    petBreeds() {
+      return this.$store.getters.petBreeds;
     },
-    animalColors() {
-      return this.$store.getters.animalColors;
+    petColors() {
+      return this.$store.getters.petColors;
     },
-    animalColorings() {
-      return this.$store.getters.animalColorings;
+    petColorings() {
+      return this.$store.getters.petColorings;
     },
     filterAdvert() {
       return this.$store.getters.filterAdvert;
@@ -76,7 +76,7 @@ export default {
         { text: 'Знайдено', value: 'find' },
         { text: 'Загублено', value: 'lost' },
       ],
-      maskAnimalAge: '##',
+      maskPetAge: '##',
       maskRadius: '#####',
     };
   },
@@ -89,12 +89,12 @@ export default {
 </script>
 
 <style scoped>
-  .filters {
-    justify-content: space-between;
-  }
-  .filters > .flex {
-    align-items: center;
-    display: flex;
-    max-width: 30%;
-  }
+.filters {
+  justify-content: space-between;
+}
+.filters > .flex {
+  align-items: center;
+  display: flex;
+  max-width: 30%;
+}
 </style>
