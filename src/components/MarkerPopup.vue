@@ -140,9 +140,6 @@ export default {
     petTypes() {
       return this.$store.getters.dataOfTableForSelect('petTypes');
     },
-    // petBreeds() {
-    //   return this.$store.getters.dataPetBreedsForSelect(this.petType);
-    // },
     petColors() {
       return this.$store.getters.dataOfTableForSelect('petColors');
     },
@@ -154,16 +151,14 @@ export default {
     createMarker() {
       if (this.$refs.form.validate()) {
         const newMarker = {
-          advertInfo: {
-            typeMarker: this.typeMarker,
-            petType: this.petType,
-            petBreed: this.petBreed,
-            petAge: String(Number(this.petAge)),
-            petColor: this.petColor,
-            petColoring: this.petColoring,
-            contactInfo: this.contactInfo,
-            photoUrl: this.photoUrl,
-          },
+          typeMarker: this.typeMarker,
+          petType: this.petType,
+          petBreed: this.petBreed,
+          petAge: String(Number(this.petAge)),
+          petColor: this.petColor,
+          petColoring: this.petColoring,
+          contactInfo: this.contactInfo,
+          photoUrl: this.photoUrl,
           position: this.latLng,
         };
         this.$store.dispatch('createAdvert', newMarker);
@@ -195,6 +190,7 @@ export default {
     onChangePetType(value) {
       if (value !== this.petType) {
         this.petBreed = null;
+        this.petBreeds = this.$store.getters.dataPetBreedsForSelect(value);
       }
     },
     onCancelEdit() {
@@ -202,11 +198,6 @@ export default {
       setTimeout(() => {
         this.isEditMode = false;
       }, 200);
-    },
-  },
-  watch: {
-    petType(value) {
-      this.petBreeds = this.$store.getters.dataPetBreedsForSelect(this.petType);
     },
   },
 };

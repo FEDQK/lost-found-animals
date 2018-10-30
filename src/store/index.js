@@ -28,7 +28,7 @@ const store = new Vuex.Store({
         icon: 'person',
       },
     ],
-    advertsData: [],
+    adverts: [],
     visibleMarkerPopup: false,
     petTypes: [],
     petBreeds: [],
@@ -55,6 +55,9 @@ const store = new Vuex.Store({
     setLoading(state, payload) {
       state.loading = payload;
     },
+    setLoadedAdverts(state, payload) {
+      state.adverts = payload;
+    },
     setLoadedPetTypes(state, payload) {
       state.petTypes = payload;
     },
@@ -68,13 +71,11 @@ const store = new Vuex.Store({
       state.petColorings = payload;
     },
     createAdvert(state, payload) {
-      state.advertsData.push(payload);
-      localStorage.setItem('advertsData', JSON.stringify(state.advertsData));
+      state.adverts.push(payload);
     },
     updateAdvert(state, payload) {
-      const advertInfo = state.advertsData.find(
-        advert => advert.id === payload.id,
-      ).advertInfo;
+      const advertInfo = state.adverts.find(advert => advert.id === payload.id)
+        .advertInfo;
       if (payload.typeMarker) {
         advertInfo.typeMarker = payload.typeMarker;
       }
@@ -99,17 +100,17 @@ const store = new Vuex.Store({
       if (payload.photoUrl) {
         advertInfo.photoUrl = payload.photoUrl;
       }
-      localStorage.setItem('advertsData', JSON.stringify(state.advertsData));
+      localStorage.setItem('adverts', JSON.stringify(state.adverts));
     },
     deleteAdvert(state, id) {
-      state.advertsData.some((advert, index) => {
+      state.adverts.some((advert, index) => {
         if (advert.id === id) {
-          state.advertsData.splice(index, 1);
+          state.adverts.splice(index, 1);
           return advert;
         }
         return false;
       });
-      localStorage.setItem('advertsData', JSON.stringify(state.advertsData));
+      localStorage.setItem('adverts', JSON.stringify(state.adverts));
     },
     showMarkerPopup(state, payload) {
       state.visibleMarkerPopup = payload;
@@ -222,16 +223,52 @@ const store = new Vuex.Store({
           commit('setLoading', false);
         });
     },
-    createAdvert({ commit }, markerData) {
+    loadAdverts({ commit }) {
+      commit('setLoading', true);
+      firebase
+        .database()
+        .ref('adverts')
+        .once('value')
+        .then(data => {
+          commit('setLoadedAdverts', data.val());
+          commit('setLoading', false);
+        })
+        .catch(err => {
+          // eslint-disable-next-line
+          console.log(err);
+          commit('setLoading', false);
+        });
+    },
+    createAdvert({ commit, getters }, advertData) {
       const advert = {
-        id: String(Date.now()),
+        id_user: getters.user.id,
+        typeMarker: advertData.typeMarker,
+        id_pet_type: advertData.petType,
+        id_pet_breed: advertData.petBreed,
+        id_pet_color: advertData.petColor,
+        id_pet_coloring: advertData.petColoring,
+        dateCreate: new Date().toISOString(),
+        petAge: advertData.petAge,
+        contactInfo: advertData.contactInfo,
+        photoUrl: advertData.photoUrl,
         position: {
-          lat: markerData.position.lat(),
-          lng: markerData.position.lng(),
+          lat: advertData.position.lat(),
+          lng: advertData.position.lng(),
         },
-        advertInfo: markerData.advertInfo,
       };
-      commit('createAdvert', advert);
+      firebase
+        .database()
+        .ref('adverts')
+        .push(advert)
+        .then(data => data.key)
+        .then(key => {
+          advert.id = key;
+          commit('createAdvert', advert);
+        })
+        .catch(err => {
+          // eslint-disable-next-line
+          console.log(err);
+        });
     },
     updateAdvert({ commit }, payload) {
       const updateObj = {
@@ -296,9 +333,8 @@ const store = new Vuex.Store({
     updateAdvertFilter({ commit }, payload) {
       commit('updateAdvertFilter', payload);
     },
-    autoSign({ commit }, payload) {
-      commit('setUser', { id: payload.uid });
-      commit('changeNavigationMenu', true);
+    autoSign({ dispatch }, payload) {
+      dispatch('loadUserData', payload.uid);
     },
     createUser({ commit }) {
       const userId = firebase.auth().currentUser.uid;
@@ -338,19 +374,30 @@ const store = new Vuex.Store({
           console.log(error);
         });
     },
-    signUserIn({ commit }, payload) {
+    loadUserData({ commit }, userId = firebase.auth().currentUser.uid) {
+      firebase
+        .database()
+        .ref(`users/${userId}`)
+        .once('value')
+        .then(data => {
+          commit('setLoading', false);
+          commit('setUser', data.val());
+          commit('changeNavigationMenu', true);
+        })
+        .catch(err => {
+          // eslint-disable-next-line
+          console.log(err);
+          commit('setLoading', false);
+        });
+    },
+    signUserIn({ commit, dispatch }, payload) {
       commit('setLoading', true);
       commit('clearError');
       firebase
         .auth()
         .signInWithEmailAndPassword(payload.email, payload.password)
-        .then(user => {
-          commit('setLoading', false);
-          const newUser = {
-            id: user.uid,
-          };
-          commit('setUser', newUser);
-          commit('changeNavigationMenu', true);
+        .then(() => {
+          dispatch('loadUserData');
         })
         .catch(error => {
           commit('setLoading', false);
@@ -378,8 +425,8 @@ const store = new Vuex.Store({
     languages(state) {
       return state.languages;
     },
-    advertsData(state) {
-      return state.advertsData;
+    adverts(state) {
+      return state.adverts;
     },
     petTypes(state) {
       return state.petTypes;

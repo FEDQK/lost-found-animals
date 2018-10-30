@@ -63,6 +63,7 @@ new Vue({
         this.$store.dispatch('autoSign', user);
       }
     });
+    this.$store.dispatch('loadAdverts');
     this.$store.dispatch('loadPetTypes');
     this.$store.dispatch('loadPetBreeds');
     this.$store.dispatch('loadPetColors');

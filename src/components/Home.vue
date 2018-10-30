@@ -10,7 +10,7 @@
       @click="setLatLng"
       @center_changed="setNewCenter">
       <map-info-window></map-info-window>
-      <advert-marker :key="index" v-for="(markerData, index) in getAdvertsData()" :markerData="markerData"></advert-marker>
+      <advert-marker :key="index" v-for="(markerData, index) in getAdverts()" :markerData="markerData"></advert-marker>
       <marker-popup :latLng="latLng"></marker-popup>
     </GmapMap>
   </v-container>
@@ -35,8 +35,8 @@ export default {
     this.getCurrentLocation();
   },
   computed: {
-    advertsData() {
-      return this.$store.getters.advertsData;
+    adverts() {
+      return this.$store.getters.adverts;
     },
     filterAdvert() {
       return this.$store.getters.filterAdvert;
@@ -98,8 +98,8 @@ export default {
       this.mapConfig.center.lng = position.coords.longitude;
       this.mapConfig.dynamicCenter.lng = position.coords.longitude;
     },
-    getAdvertsData() {
-      let result = this.advertsData;
+    getAdverts() {
+      let result = this.adverts;
       Object.keys(this.filterAdvert).forEach(key => {
         if (this.filterAdvert[key]) {
           switch (key) {
@@ -128,8 +128,8 @@ export default {
       });
       return result;
     },
-    filterRadius(advertsData) {
-      return advertsData.filter(advert => {
+    filterRadius(adverts) {
+      return adverts.filter(advert => {
         if (
           this.getDistanceBetween(advert.position) / 1000 <=
           Number(this.filterAdvert.radius)
