@@ -1,7 +1,7 @@
 <template>
-  <gmap-info-window :options="infoWindowOptions" :position="infoWindow.position" :opened="infoWindow.isOpen" @closeclick="onCloseInfoWindow" v-if="infoWindow.content">
+  <gmap-info-window :options="infoWindowOptions" :position="infoWindow.position" :opened="infoWindow.isOpen" @closeclick="onCloseInfoWindow" v-if="infoWindow.isOpen">
     <v-card>
-      <v-card-media class="advert-photo" :src="infoWindow.content.photoUrl" height="200px" contain>
+      <v-card-media class="advert-photo" :src="infoWindow.photoUrl" height="200px" contain>
       </v-card-media>
       <v-card-text class="info-window-text">
         <span>Тип маркера:</span> {{nameTypeMarker}}
@@ -13,7 +13,7 @@
         <span>Порода тварини:</span> {{namePetBreeds}}
       </v-card-text>
       <v-card-text class="info-window-text">
-        <span>Вік тварини:</span> {{infoWindow.content.petAge}}
+        <span>Вік тварини:</span> {{infoWindow.petAge}}
       </v-card-text>
       <v-card-text class="info-window-text">
         <span>Кольори тварини:</span> {{namePetColors}}
@@ -22,7 +22,7 @@
         <span>Окрас тварини:</span> {{namePetColorings}}
       </v-card-text>
       <v-card-text class="info-window-text">
-        <span>Контактна інформація:</span> {{infoWindow.content.contactInfo}}
+        <span>Контактна інформація:</span> {{infoWindow.contactInfo}}
       </v-card-text>
       <v-card-actions class="form-buttons">
         <v-layout justify-center>
@@ -41,30 +41,25 @@ export default {
     infoWindow() {
       return this.$store.getters.infoWindow;
     },
+    locale() {
+      return this.$store.getters.locale;
+    },
     nameTypeMarker() {
-      return this.infoWindow.content.typeMarker === 'find'
-        ? 'Знайдено'
-        : 'Загублено';
+      return this.infoWindow.typeMarker === 'find' ? 'Знайдено' : 'Загублено';
     },
     namePetTypes() {
-      return this.$store.getters.namePetTypes(this.infoWindow.content.petType)
-        .text;
+      return this.$store.getters.namePetTypes(this.infoWindow.id_pet_type);
     },
     namePetBreeds() {
-      return this.$store.getters.namePetBreeds(
-        this.infoWindow.content.petBreed,
-        this.infoWindow.content.petType,
-      ).text;
+      return this.$store.getters.namePetBreeds(this.infoWindow.id_pet_breed);
     },
     namePetColors() {
-      return this.$store.getters.namePetColors(
-        this.infoWindow.content.petColor,
-      );
+      return this.$store.getters.namePetColors(this.infoWindow.id_pet_color);
     },
     namePetColorings() {
       return this.$store.getters.namePetColorings(
-        this.infoWindow.content.petColoring,
-      ).text;
+        this.infoWindow.id_pet_coloring,
+      );
     },
   },
   data() {
@@ -90,7 +85,7 @@ export default {
       this.onCloseInfoWindow();
       this.$store.dispatch('editAdvert', {
         id: this.infoWindow.markerId,
-        advertInfo: this.infoWindow.content,
+        advertInfo: this.infoWindow,
       });
       this.$bus.$emit('editAdvert');
       this.$store.commit('showMarkerPopup', true);

@@ -36,9 +36,8 @@ const store = new Vuex.Store({
     petColorings: [],
     infoWindow: {
       position: null,
-      content: null,
       isOpen: false,
-      markerId: null,
+      id: null,
     },
     dataEditAdvert: null,
     filterAdvert: {
@@ -74,25 +73,27 @@ const store = new Vuex.Store({
       state.adverts.push(payload);
     },
     updateAdvert(state, payload) {
-      const advertInfo = state.adverts.find(advert => advert.id === payload.id)
-        .advertInfo;
+      const advertInfo = state.adverts.find(advert => advert.id === payload.id);
+      if (payload.id_user) {
+        advertInfo.id_user = payload.id_user;
+      }
       if (payload.typeMarker) {
         advertInfo.typeMarker = payload.typeMarker;
       }
-      if (payload.petType) {
-        advertInfo.petType = payload.petType;
+      if (payload.id_pet_type) {
+        advertInfo.id_pet_type = payload.id_pet_type;
       }
-      if (payload.petBreed) {
-        advertInfo.petBreed = payload.petBreed;
+      if (payload.id_pet_breed) {
+        advertInfo.id_pet_breed = payload.id_pet_breed;
+      }
+      if (payload.id_pet_color) {
+        advertInfo.id_pet_color = payload.id_pet_color;
+      }
+      if (payload.id_pet_coloring) {
+        advertInfo.id_pet_coloring = payload.id_pet_coloring;
       }
       if (payload.petAge) {
         advertInfo.petAge = payload.petAge;
-      }
-      if (payload.petColor) {
-        advertInfo.petColor = payload.petColor;
-      }
-      if (payload.petColoring) {
-        advertInfo.petColoring = payload.petColoring;
       }
       if (payload.contactInfo) {
         advertInfo.contactInfo = payload.contactInfo;
@@ -100,7 +101,6 @@ const store = new Vuex.Store({
       if (payload.photoUrl) {
         advertInfo.photoUrl = payload.photoUrl;
       }
-      localStorage.setItem('adverts', JSON.stringify(state.adverts));
     },
     deleteAdvert(state, id) {
       state.adverts.some((advert, index) => {
@@ -116,18 +116,8 @@ const store = new Vuex.Store({
       state.visibleMarkerPopup = payload;
     },
     updateInfoWindow(state, payload) {
-      if (payload.position) {
-        state.infoWindow.position = payload.position;
-      }
-      if (payload.content) {
-        state.infoWindow.content = payload.content;
-      }
-      if (payload.markerId) {
-        state.infoWindow.markerId = payload.markerId;
-      }
-      if (Object.prototype.hasOwnProperty.call(payload, 'isOpen')) {
-        state.infoWindow.isOpen = payload.isOpen;
-      }
+      const newData = Object.assign(state.infoWindow, payload);
+      state.infoWindow = newData;
     },
     editAdvert(state, payload) {
       state.dataEditAdvert = payload;
@@ -230,7 +220,11 @@ const store = new Vuex.Store({
         .ref('adverts')
         .once('value')
         .then(data => {
-          commit('setLoadedAdverts', data.val());
+          const dataObject = data.val();
+          const dataArray = Object.keys(dataObject).map(
+            advertId => dataObject[advertId],
+          );
+          commit('setLoadedAdverts', dataArray);
           commit('setLoading', false);
         })
         .catch(err => {
@@ -239,7 +233,7 @@ const store = new Vuex.Store({
           commit('setLoading', false);
         });
     },
-    createAdvert({ commit, getters }, advertData) {
+    createAdvert({ commit, getters, dispatch }, advertData) {
       const advert = {
         id_user: getters.user.id,
         typeMarker: advertData.typeMarker,
@@ -264,6 +258,7 @@ const store = new Vuex.Store({
         .then(key => {
           advert.id = key;
           commit('createAdvert', advert);
+          dispatch('updateAdvert', { id: key });
         })
         .catch(err => {
           // eslint-disable-next-line
@@ -277,20 +272,20 @@ const store = new Vuex.Store({
       if (payload.typeMarker) {
         updateObj.typeMarker = payload.typeMarker;
       }
-      if (payload.petType) {
-        updateObj.petType = payload.petType;
+      if (payload.id_pet_type) {
+        updateObj.id_pet_type = payload.id_pet_type;
       }
-      if (payload.petBreed) {
-        updateObj.petBreed = payload.petBreed;
+      if (payload.id_pet_breed) {
+        updateObj.id_pet_breed = payload.id_pet_breed;
+      }
+      if (payload.id_pet_color) {
+        updateObj.id_pet_color = payload.id_pet_color;
+      }
+      if (payload.id_pet_coloring) {
+        updateObj.id_pet_coloring = payload.id_pet_coloring;
       }
       if (payload.petAge) {
         updateObj.petAge = payload.petAge;
-      }
-      if (payload.petColor) {
-        updateObj.petColor = payload.petColor;
-      }
-      if (payload.petColoring) {
-        updateObj.petColoring = payload.petColoring;
       }
       if (payload.contactInfo) {
         updateObj.contactInfo = payload.contactInfo;
@@ -298,31 +293,33 @@ const store = new Vuex.Store({
       if (payload.photoUrl) {
         updateObj.photoUrl = payload.photoUrl;
       }
-      commit('updateAdvert', updateObj);
+      firebase
+        .database()
+        .ref('adverts')
+        .child(payload.id)
+        .update(updateObj)
+        .then(() => {
+          commit('updateAdvert', updateObj);
+        })
+        .catch(error => {
+          // eslint-disable-next-line
+          console.log(error);
+        });
     },
-    deleteAdvert({ commit }, markerId) {
-      commit('deleteAdvert', markerId);
+    deleteAdvert({ commit }, id) {
+      commit('deleteAdvert', id);
     },
     updateInfoWindow({ commit, getters }, payload) {
-      const updateObj = {};
-      if (payload.position) {
-        updateObj.position = payload.position;
-      }
-      if (payload.advertInfo) {
-        updateObj.content = payload.advertInfo;
-      }
-      if (Object.prototype.hasOwnProperty.call(payload, 'isOpen')) {
-        updateObj.isOpen = payload.isOpen;
-      }
+      const updateObj = Object.assign({}, payload);
       if (payload.id) {
         if (
-          getters.infoWindow.markerId !== null &&
-          getters.infoWindow.markerId === payload.id
+          getters.infoWindow.id !== null &&
+          getters.infoWindow.id === payload.id
         ) {
           updateObj.isOpen = !getters.infoWindow.isOpen;
         } else {
           updateObj.isOpen = true;
-          updateObj.markerId = payload.id;
+          updateObj.id = payload.id;
         }
       }
       commit('updateInfoWindow', updateObj);
@@ -460,24 +457,30 @@ const store = new Vuex.Store({
           }));
     },
     namePetTypes(state) {
-      return value => state.petTypes.find(petType => petType.id === value);
+      return value =>
+        state.petTypes.find(petType => petType.id === value)[state.locale].name;
     },
     namePetBreeds(state) {
-      return (value, type) =>
-        state.petBreeds[type].find(petBreed => petBreed.value === value);
+      return value =>
+        state.petBreeds.find(petBreed => petBreed.id === value)[state.locale]
+          .name;
     },
     namePetColors(state) {
       return arrayColors =>
         arrayColors
           .map(
             color =>
-              state.petColors.find(petColor => petColor.value === color).text,
+              state.petColors.find(petColor => petColor.id === color)[
+                state.locale
+              ].name,
           )
           .join(', ');
     },
     namePetColorings(state) {
       return value =>
-        state.petColorings.find(petColoring => petColoring.value === value);
+        state.petColorings.find(petColoring => petColoring.id === value)[
+          state.locale
+        ].name;
     },
     dataEditAdvert(state) {
       return state.dataEditAdvert;
