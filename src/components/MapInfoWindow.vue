@@ -79,14 +79,11 @@ export default {
     },
     onDeleteAdvert() {
       this.onCloseInfoWindow();
-      this.$store.dispatch('deleteAdvert', this.infoWindow.markerId);
+      this.$store.dispatch('deleteAdvert', this.infoWindow.id);
     },
     onEditAdvert() {
       this.onCloseInfoWindow();
-      this.$store.dispatch('editAdvert', {
-        id: this.infoWindow.markerId,
-        advertInfo: this.infoWindow,
-      });
+      this.$store.dispatch('editAdvert', this.infoWindow);
       this.$bus.$emit('editAdvert');
       this.$store.commit('showMarkerPopup', true);
     },

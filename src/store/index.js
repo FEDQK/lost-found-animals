@@ -38,6 +38,15 @@ const store = new Vuex.Store({
       position: null,
       isOpen: false,
       id: null,
+      id_user: null,
+      typeMarker: null,
+      id_pet_type: null,
+      id_pet_breed: null,
+      id_pet_color: null,
+      id_pet_coloring: null,
+      petAge: null,
+      contactInfo: null,
+      photoUrl: null,
     },
     dataEditAdvert: null,
     filterAdvert: {
@@ -110,14 +119,47 @@ const store = new Vuex.Store({
         }
         return false;
       });
-      localStorage.setItem('adverts', JSON.stringify(state.adverts));
     },
     showMarkerPopup(state, payload) {
       state.visibleMarkerPopup = payload;
     },
     updateInfoWindow(state, payload) {
-      const newData = Object.assign(state.infoWindow, payload);
-      state.infoWindow = newData;
+      if (payload.id) {
+        state.infoWindow.id = payload.id;
+      }
+      if (Object.prototype.hasOwnProperty.call(payload, 'isOpen')) {
+        state.infoWindow.isOpen = payload.isOpen;
+      }
+      if (payload.id_user) {
+        state.infoWindow.id_user = payload.id_user;
+      }
+      if (payload.typeMarker) {
+        state.infoWindow.typeMarker = payload.typeMarker;
+      }
+      if (payload.id_pet_type) {
+        state.infoWindow.id_pet_type = payload.id_pet_type;
+      }
+      if (payload.id_pet_breed) {
+        state.infoWindow.id_pet_breed = payload.id_pet_breed;
+      }
+      if (payload.id_pet_color) {
+        state.infoWindow.id_pet_color = payload.id_pet_color;
+      }
+      if (payload.id_pet_coloring) {
+        state.infoWindow.id_pet_coloring = payload.id_pet_coloring;
+      }
+      if (payload.petAge) {
+        state.infoWindow.petAge = payload.petAge;
+      }
+      if (payload.contactInfo) {
+        state.infoWindow.contactInfo = payload.contactInfo;
+      }
+      if (payload.photoUrl) {
+        state.infoWindow.photoUrl = payload.photoUrl;
+      }
+      if (payload.position) {
+        state.infoWindow.position = payload.position;
+      }
     },
     editAdvert(state, payload) {
       state.dataEditAdvert = payload;
@@ -307,7 +349,17 @@ const store = new Vuex.Store({
         });
     },
     deleteAdvert({ commit }, id) {
-      commit('deleteAdvert', id);
+      firebase
+        .database()
+        .ref(`adverts/${id}`)
+        .remove()
+        .then(() => {
+          commit('deleteAdvert', id);
+        })
+        .catch(err => {
+          // eslint-disable-next-line
+          console.log(err);
+        });
     },
     updateInfoWindow({ commit, getters }, payload) {
       const updateObj = Object.assign({}, payload);

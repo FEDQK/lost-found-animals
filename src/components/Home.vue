@@ -1,18 +1,29 @@
 <template>
   <v-container>
     <advert-filter></advert-filter>
-    <GmapMap
-      :center="mapConfig.center"
-      :zoom="mapConfig.zoom"
-      :map-type-id="mapConfig.type"
-      class="main-map"
-      ref="mapRef"
-      @click="setLatLng"
-      @center_changed="setNewCenter">
-      <map-info-window></map-info-window>
-      <advert-marker :key="index" v-for="(markerData, index) in getAdverts()" :markerData="markerData"></advert-marker>
-      <marker-popup :latLng="latLng"></marker-popup>
-    </GmapMap>
+    <v-layout column align-center class="map-layout">
+      <GmapMap
+        v-if="!loading"
+        :center="mapConfig.center"
+        :zoom="mapConfig.zoom"
+        :map-type-id="mapConfig.type"
+        class="main-map"
+        ref="mapRef"
+        @click="setLatLng"
+        @center_changed="setNewCenter">
+        <map-info-window></map-info-window>
+        <advert-marker :key="index" v-for="(markerData, index) in getAdverts()" :markerData="markerData"></advert-marker>
+        <marker-popup :latLng="latLng"></marker-popup>
+      </GmapMap>
+      <v-flex xs12 align-center d-flex class="text-xs-center" v-if="loading">
+        <v-progress-circular
+          indeterminate
+          color="active"
+          :width="7"
+          :size="70"
+        ></v-progress-circular>
+      </v-flex>
+    </v-layout>
   </v-container>
 </template>
 
@@ -40,6 +51,9 @@ export default {
     },
     filterAdvert() {
       return this.$store.getters.filterAdvert;
+    },
+    loading() {
+      return this.$store.getters.loading;
     },
     google: gmapApi,
   },
@@ -146,6 +160,9 @@ export default {
 <style scoped>
 .main-map {
   width: 100%;
-  height: 75%;
+  height: 100%;
+}
+.map-layout {
+  height: calc(100% - 155px);
 }
 </style>
