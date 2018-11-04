@@ -1,33 +1,80 @@
+<i18n>
+  {
+    "en": {
+      "find": "Found",
+      "lost": "Lost",
+      "typeMarker": "Marker Type:",
+      "petType": "Kind of pet:",
+      "petBreed": "Pet Breed:",
+      "petAge": "Pet Age:",
+      "petAgeSuffix": "yr",
+      "petColor": "Pet color:",
+      "petColoring": "Pet coloring:",
+      "contactInfo": "Contact Information:",
+      "buttonEditAdvert": "Edit",
+      "buttonDeleteAdvert": "Delete"
+    },
+    "ua": {
+      "find": "Знайдено",
+      "lost": "Загублено",
+      "typeMarker": "Тип маркера:",
+      "petType": "Вид тварини:",
+      "petBreed": "Порода тварини:",
+      "petAge": "Вік тварини:",
+      "petAgeSuffix": "рік",
+      "petColor": "Кольор тварини:",
+      "petColoring": "Окрас тварини:",
+      "contactInfo": "Контактна інформація:",
+      "buttonEditAdvert": "Редагувати",
+      "buttonDeleteAdvert": "Видалити"
+    },
+    "ru": {
+      "find": "Найдено",
+      "lost": "Потеряно",
+      "typeMarker": "Тип маркера:",
+      "petType": "Вид животного:",
+      "petBreed": "Порода животного:",
+      "petAge": "Возраст животного:",
+      "petAgeSuffix": "год",
+      "petColor": "Цвет животного:",
+      "petColoring": "Окрас животного:",
+      "contactInfo": "Контактная информация:",
+      "buttonEditAdvert": "Редактировать",
+      "buttonDeleteAdvert": "Удалить"
+    }
+  }
+</i18n>
+
 <template>
   <gmap-info-window :options="infoWindowOptions" :position="infoWindow.position" :opened="infoWindow.isOpen" @closeclick="onCloseInfoWindow" v-if="infoWindow.isOpen">
     <v-card>
       <v-card-media class="advert-photo" :src="infoWindow.photoUrl" height="200px" contain>
       </v-card-media>
       <v-card-text class="info-window-text">
-        <span>Тип маркера:</span> {{nameTypeMarker}}
+        <b>{{$t('typeMarker')}}</b> {{$t(infoWindow.typeMarker)}}
       </v-card-text>
       <v-card-text class="info-window-text">
-        <span>Вид тварини:</span> {{namePetTypes}}
+        <b>{{$t('petType')}}</b> {{namePetTypes}}
       </v-card-text>
       <v-card-text class="info-window-text">
-        <span>Порода тварини:</span> {{namePetBreeds}}
+        <b>{{$t('petBreed')}}</b> {{namePetBreeds}}
       </v-card-text>
       <v-card-text class="info-window-text">
-        <span>Вік тварини:</span> {{infoWindow.petAge}}
+        <b>{{$t('petAge')}}</b> {{`${infoWindow.petAge} ${$t('petAgeSuffix')}`}}
       </v-card-text>
       <v-card-text class="info-window-text">
-        <span>Кольори тварини:</span> {{namePetColors}}
+        <b>{{$t('petColor')}}</b> {{namePetColors}}
       </v-card-text>
       <v-card-text class="info-window-text">
-        <span>Окрас тварини:</span> {{namePetColorings}}
+        <b>{{$t('petColoring')}}</b> {{namePetColorings}}
       </v-card-text>
       <v-card-text class="info-window-text">
-        <span>Контактна інформація:</span> {{infoWindow.contactInfo}}
+        <b>{{$t('contactInfo')}}</b> {{infoWindow.contactInfo}}
       </v-card-text>
       <v-card-actions class="form-buttons">
         <v-layout justify-center>
-            <v-btn color="info" depressed @click="onEditAdvert">Редагувати</v-btn>
-            <v-btn color="error" depressed @click="onDeleteAdvert">Видалити</v-btn>
+            <v-btn color="info" depressed @click="onEditAdvert">{{$t('buttonEditAdvert')}}</v-btn>
+            <v-btn color="error" depressed @click="onDeleteAdvert">{{$t('buttonDeleteAdvert')}}</v-btn>
         </v-layout>
       </v-card-actions>
     </v-card>
@@ -40,12 +87,6 @@ export default {
   computed: {
     infoWindow() {
       return this.$store.getters.infoWindow;
-    },
-    locale() {
-      return this.$store.getters.locale;
-    },
-    nameTypeMarker() {
-      return this.infoWindow.typeMarker === 'find' ? 'Знайдено' : 'Загублено';
     },
     namePetTypes() {
       return this.$store.getters.namePetTypes(this.infoWindow.id_pet_type);
@@ -95,7 +136,7 @@ export default {
 .info-window-text {
   padding: 5px;
 }
-.info-window-text > span {
+.info-window-text > b {
   font-weight: bold;
 }
 </style>
