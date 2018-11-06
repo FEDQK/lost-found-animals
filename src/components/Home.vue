@@ -114,27 +114,26 @@ export default {
     },
     getAdverts() {
       let result = this.adverts;
+      const self = this;
       Object.keys(this.filterAdvert).forEach(key => {
-        if (this.filterAdvert[key]) {
+        if (self.filterAdvert[key] && self.filterAdvert[key] !== 'all') {
           switch (key) {
-            case 'petColor':
-              result = result.filter(advert => {
-                if (
-                  this.filterAdvert[key].every(
-                    color => advert.advertInfo[key].indexOf(color) >= 0,
+            case 'id_pet_color':
+              result = result.filter(
+                advert =>
+                  self.filterAdvert[key].every(
+                    color => advert[key].indexOf(color) >= 0,
                   )
-                ) {
-                  return advert;
-                }
-                return false;
-              });
+                    ? advert
+                    : false,
+              );
               break;
             case 'radius':
-              result = this.filterRadius(result);
+              result = self.filterRadius(result);
               break;
             default:
               result = result.filter(
-                advert => advert.advertInfo[key] === this.filterAdvert[key],
+                advert => advert[key] === self.filterAdvert[key],
               );
               break;
           }

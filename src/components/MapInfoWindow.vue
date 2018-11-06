@@ -22,7 +22,7 @@
       "petBreed": "Порода тварини:",
       "petAge": "Вік тварини:",
       "petAgeSuffix": "рік",
-      "petColor": "Кольор тварини:",
+      "petColor": "Колір тварини:",
       "petColoring": "Окрас тварини:",
       "contactInfo": "Контактна інформація:",
       "buttonEditAdvert": "Редагувати",
@@ -71,7 +71,7 @@
       <v-card-text class="info-window-text">
         <b>{{$t('contactInfo')}}</b> {{infoWindow.contactInfo}}
       </v-card-text>
-      <v-card-actions class="form-buttons">
+      <v-card-actions class="form-buttons" v-if="user.id === infoWindow.id_user || user.role === 'admin'">
         <v-layout justify-center>
             <v-btn color="info" depressed @click="onEditAdvert">{{$t('buttonEditAdvert')}}</v-btn>
             <v-btn color="error" depressed @click="onDeleteAdvert">{{$t('buttonDeleteAdvert')}}</v-btn>
@@ -85,6 +85,9 @@
 export default {
   name: 'map-info-window',
   computed: {
+    user() {
+      return this.$store.getters.user;
+    },
     infoWindow() {
       return this.$store.getters.infoWindow;
     },

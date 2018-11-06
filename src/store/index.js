@@ -28,6 +28,7 @@ const store = new Vuex.Store({
         icon: 'person',
       },
     ],
+    typeMarkers: ['find', 'lost'],
     adverts: [],
     visibleMarkerPopup: false,
     petTypes: [],
@@ -50,12 +51,12 @@ const store = new Vuex.Store({
     },
     dataEditAdvert: null,
     filterAdvert: {
-      typeMarker: null,
-      petType: null,
-      petBreed: null,
+      typeMarker: 'all',
+      id_pet_type: 'all',
+      id_pet_breed: 'all',
       petAge: null,
-      petColor: null,
-      petColoring: null,
+      id_pet_color: null,
+      id_pet_coloring: 'all',
       radius: null,
     },
   },
@@ -477,6 +478,11 @@ const store = new Vuex.Store({
     adverts(state) {
       return state.adverts;
     },
+    userAdverts(state) {
+      return state.adverts.filter(
+        advert => advert.id_user === (state.user ? state.user.id : null),
+      );
+    },
     petTypes(state) {
       return state.petTypes;
     },
@@ -488,6 +494,9 @@ const store = new Vuex.Store({
     },
     petColorings(state) {
       return state.petColorings;
+    },
+    typeMarkers(state) {
+      return state.typeMarkers;
     },
     infoWindow(state) {
       return state.infoWindow;
