@@ -1,3 +1,50 @@
+<i18n>
+  {
+    "en": {
+      "find": "Found",
+      "lost": "Lost",
+      "typeMarker": "Marker Type:",
+      "petType": "Kind of pet:",
+      "petBreed": "Pet Breed:",
+      "petAge": "Pet Age:",
+      "petAgeSuffix": "yr",
+      "petColor": "Pet color:",
+      "petColoring": "Pet coloring:",
+      "contactInfo": "Contact Information:",
+      "buttonEditAdvert": "Edit",
+      "buttonDeleteAdvert": "Delete"
+    },
+    "ua": {
+      "find": "Знайдено",
+      "lost": "Загублено",
+      "typeMarker": "Тип маркера:",
+      "petType": "Вид тварини:",
+      "petBreed": "Порода тварини:",
+      "petAge": "Вік тварини:",
+      "petAgeSuffix": "рік",
+      "petColor": "Колір тварини:",
+      "petColoring": "Окрас тварини:",
+      "contactInfo": "Контактна інформація:",
+      "buttonEditAdvert": "Редагувати",
+      "buttonDeleteAdvert": "Видалити"
+    },
+    "ru": {
+      "find": "Найдено",
+      "lost": "Потеряно",
+      "typeMarker": "Тип маркера:",
+      "petType": "Вид животного:",
+      "petBreed": "Порода животного:",
+      "petAge": "Возраст животного:",
+      "petAgeSuffix": "год",
+      "petColor": "Цвет животного:",
+      "petColoring": "Окрас животного:",
+      "contactInfo": "Контактная информация:",
+      "buttonEditAdvert": "Редактировать",
+      "buttonDeleteAdvert": "Удалить"
+    }
+  }
+</i18n>
+
 <template>
   <section class="profile">
     <v-toolbar color="main">
@@ -6,9 +53,17 @@
     <v-container class="scroll-y adverts-container">
       <v-layout style="height: auto;">
         <v-flex>
-          <v-card v-for="(advert, index) in userAdverts" :key="index" class="advert">
-            <v-card-media class="advert-photo" height="200" :src="advert.photoUrl"></v-card-media>
-            <v-card-text>{{advert.contactInfo}}</v-card-text>
+          <v-card v-for="(advert) in userAdverts" :key="advert.id" class="advert">
+            <v-card-media class="advert-photo" height="200" :src="advert.photoUrl" contain></v-card-media>
+            <section class="advert-data">
+              <v-card-text><b>{{$t('typeMarker')}}</b> {{$t(advert.typeMarker)}}</v-card-text>
+              <v-card-text><b>{{$t('petType')}}</b> {{namePetType(advert.id_pet_type)}}</v-card-text>
+              <v-card-text><b>{{$t('petBreed')}}</b> {{namePetBreed(advert.id_pet_breed)}}</v-card-text>
+              <v-card-text><b>{{$t('petAge')}}</b> {{`${advert.petAge} ${$t('petAgeSuffix')}`}}</v-card-text>
+              <v-card-text><b>{{$t('petColor')}}</b> {{namePetColor(advert.id_pet_color)}}</v-card-text>
+              <v-card-text><b>{{$t('petColoring')}}</b> {{namePetColoring(advert.id_pet_coloring)}}</v-card-text>
+              <v-card-text><b>{{$t('contactInfo')}}</b> {{advert.contactInfo}}</v-card-text>
+            </section>
           </v-card>
         </v-flex>
         
@@ -31,7 +86,20 @@ export default {
       return window.innerHeight - 112;
     },
   },
-  methods: {},
+  methods: {
+    namePetType(id) {
+      return this.$store.getters.namePetTypes(id);
+    },
+    namePetBreed(id) {
+      return this.$store.getters.namePetBreeds(id);
+    },
+    namePetColor(id) {
+      return this.$store.getters.namePetColors(id);
+    },
+    namePetColoring(id) {
+      return this.$store.getters.namePetColorings(id);
+    },
+  },
 };
 </script>
 
@@ -55,9 +123,13 @@ export default {
 }
 .advert {
   display: flex;
+  align-items: center;
   margin-bottom: 15px;
 }
 .advert-photo {
   width: 60%;
+}
+.advert-data >>> .card__text {
+  padding: 5px;
 }
 </style>
