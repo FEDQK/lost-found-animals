@@ -71,7 +71,7 @@
       <v-card-text class="info-window-text">
         <b>{{$t('contactInfo')}}</b> {{infoWindow.contactInfo}}
       </v-card-text>
-      <v-card-actions class="form-buttons" v-if="user.id === infoWindow.id_user || user.role === 'admin'">
+      <v-card-actions class="form-buttons" v-if="checkUser">
         <v-layout justify-center>
             <v-btn color="info" depressed @click="onEditAdvert">{{$t('buttonEditAdvert')}}</v-btn>
             <v-btn color="error" depressed @click="onDeleteAdvert">{{$t('buttonDeleteAdvert')}}</v-btn>
@@ -103,6 +103,12 @@ export default {
     namePetColorings() {
       return this.$store.getters.namePetColorings(
         this.infoWindow.id_pet_coloring,
+      );
+    },
+    checkUser() {
+      return (
+        this.user &&
+        (this.user.id === this.infoWindow.id_user || this.user.role === 'admin')
       );
     },
   },

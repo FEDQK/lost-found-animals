@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="section-main">
     <advert-filter></advert-filter>
     <v-layout column align-center class="map-layout">
       <GmapMap
@@ -157,11 +157,15 @@ export default {
 </script>
 
 <style scoped>
+.section-main {
+  display: flex;
+  flex-direction: column;
+}
 .main-map {
   width: 100%;
   height: 100%;
 }
 .map-layout {
-  height: calc(100% - 155px);
+  height: calc(100% - 202px);
 }
 </style>
