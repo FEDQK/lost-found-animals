@@ -1,43 +1,40 @@
 <i18n>
   {
     "en": {
-      "title": "My adverts"
+      "title": "Moderation adverts"
     },
     "ua": {
-      "title": "Мої оголошення"
+      "title": "Оголошення на модерації"
     },
     "ru": {
-      "title": "Мои обявления"
+      "title": "Объявления на модерации"
     }
   }
 </i18n>
 
 <template>
-  <section class="profile">
+  <section class="moderation">
     <v-toolbar color="colorMain" class="toolbar">
       <v-toolbar-title class="title">{{$t('title')}}</v-toolbar-title>
     </v-toolbar>
-    <adverts-list :style="{height: containerHeight + 'px'}" :advertsData="userAdverts"></adverts-list>
-    <advert-popup></advert-popup>
+    <adverts-list :style="{height: containerHeight + 'px'}" :isModeration="true" :advertsData="moderationAdverts"></adverts-list>
   </section>
 </template>
 
 <script>
-import AdvertsList from '../AdvertsList';
-import AdvertPopup from '../AdvertPopup';
+import AdvertsList from './AdvertsList';
 
 export default {
-  name: 'profile',
+  name: 'moderation',
   components: {
     AdvertsList,
-    AdvertPopup,
   },
   data() {
     return {};
   },
   computed: {
-    userAdverts() {
-      return this.$store.getters.userAdverts;
+    moderationAdverts() {
+      return this.$store.getters.moderationAdverts;
     },
     containerHeight() {
       return window.innerHeight - 112;
@@ -48,7 +45,7 @@ export default {
 </script>
 
 <style scoped>
-.profile {
+.moderation {
   height: 100%;
 }
 .toolbar {

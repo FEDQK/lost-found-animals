@@ -21,7 +21,7 @@
       "petType": "Вид тварини:",
       "petBreed": "Порода тварини:",
       "petAge": "Вік тварини:",
-      "petAgeSuffix": "рік",
+      "petAgeSuffix": "р.",
       "petColor": "Колір тварини:",
       "petColoring": "Окрас тварини:",
       "contactInfo": "Контактна інформація:",
@@ -35,7 +35,7 @@
       "petType": "Вид животного:",
       "petBreed": "Порода животного:",
       "petAge": "Возраст животного:",
-      "petAgeSuffix": "год",
+      "petAgeSuffix": "г.",
       "petColor": "Цвет животного:",
       "petColoring": "Окрас животного:",
       "contactInfo": "Контактная информация:",
@@ -135,7 +135,7 @@ export default {
       this.onCloseInfoWindow();
       this.$store.dispatch('editAdvert', this.infoWindow);
       this.$bus.$emit('editAdvert');
-      this.$store.commit('showMarkerPopup', true);
+      this.$store.commit('showAdvertPopup', true);
     },
   },
 };

@@ -1,8 +1,8 @@
 <i18n>
   {
     "en": {
-      "headlineUpdate": "Update marker",
-      "headlineCreate": "Add marker",
+      "headlineUpdate": "Update advert",
+      "headlineCreate": "Add advert",
       "labelFind": "Found",
       "labelLost": "Lost",
       "labelPetType": "Kind of pet",
@@ -26,14 +26,14 @@
       "petColoringRules": "Pet coloring is required"
     },
     "ua": {
-      "headlineUpdate": "Оновити маркер",
-      "headlineCreate": "Додати маркер",
+      "headlineUpdate": "Оновити оголошення",
+      "headlineCreate": "Додати оголошення",
       "labelFind": "Знайдена",
       "labelLost": "Загублена",
       "labelPetType": "Вид тварини",
       "labelPetBreed": "Порода тварини",
       "labelPetAge": "Вік тварини",
-      "labelPetAgeSuffix": "рік",
+      "labelPetAgeSuffix": "р.",
       "labelPetColor": "Колір тварини",
       "labelPetColoring": "Окраса тварини",
       "labelContactInfo": "Контактна інформація",
@@ -51,14 +51,14 @@
       "petColoringRules": "Окраса тварини обов'язкова"
     },
     "ru": {
-      "headlineUpdate": "Обновить маркер",
-      "headlineCreate": "Добавить маркер",
+      "headlineUpdate": "Обновить обявление",
+      "headlineCreate": "Добавить обявление",
       "labelFind": "Найдена",
       "labelLost": "Потерянная",
       "labelPetType": "Вид животного",
       "labelPetBreed": "Порода животного",
       "labelPetAge": "Возраст животного",
-      "labelPetAgeSuffix": "год",
+      "labelPetAgeSuffix": "г.",
       "labelPetColor": "Цвет животного",
       "labelPetColoring": "Окраса животного",
       "labelContactInfo": "Контактная информация",
@@ -160,7 +160,7 @@
 
 <script>
 export default {
-  name: 'marker-popup',
+  name: 'advert-popup',
   props: {
     latLng: {
       type: Object,
@@ -213,7 +213,7 @@ export default {
   },
   computed: {
     active() {
-      return this.$store.state.visibleMarkerPopup;
+      return this.$store.state.visibleAdvertPopup;
     },
     petTypes() {
       return this.$store.getters.dataOfTableForSelect('petTypes');
@@ -263,7 +263,7 @@ export default {
     hidePopup() {
       this.$refs.form.reset();
       this.typeMarker = 'find';
-      this.$store.commit('showMarkerPopup', false);
+      this.$store.commit('showAdvertPopup', false);
     },
     loadedPetBreeds(petType) {
       this.petBreeds = this.$store.getters.dataPetBreedsForSelect(petType);

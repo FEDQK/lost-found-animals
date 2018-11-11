@@ -4,6 +4,7 @@
       "map": "Map",
       "authorization": "Authorization",
       "profile": "Profile",
+      "moderation": "Moderation",
       "ua": "Український",
       "ru": "Русский",
       "en": "English"
@@ -12,6 +13,7 @@
       "map": "Карта",
       "authorization": "Авторизація",
       "profile": "Профіль",
+      "moderation": "Модерація",
       "ua": "Український",
       "ru": "Русский",
       "en": "English"
@@ -20,6 +22,7 @@
       "map": "Карта",
       "authorization": "Авторизация",
       "profile": "Профиль",
+      "moderation": "Модерация",
       "ua": "Український",
       "ru": "Русский",
       "en": "English"
@@ -28,14 +31,14 @@
 </i18n>
 
 <template>
-  <v-bottom-nav :value="true" class="main-menu" color="main">
+  <v-bottom-nav :value="true" class="main-menu" color="colorMain">
     <v-select
       class="lang-selector"
       :items="languages"
       v-model="locale"
       hide-details
       hide-selected
-      color="active"
+      color="colorActive"
       prepend-icon="language"
       :dark="true"
     ></v-select>
@@ -66,8 +69,15 @@ export default {
     user() {
       return this.$store.getters.user;
     },
+    isModerator() {
+      return this.user && this.user.role === 'moderator';
+    },
     navigationMenu() {
-      return this.$store.getters.navigationMenu;
+      const navigationMenu = this.$store.getters.navigationMenu;
+      if (this.isModerator) {
+        return this.addModerationTab(navigationMenu);
+      }
+      return navigationMenu;
     },
     locale: {
       get() {
@@ -89,6 +99,16 @@ export default {
     onLogout() {
       this.$store.dispatch('logout');
       this.$router.push('/');
+    },
+    addModerationTab(navigationMenu) {
+      return [
+        ...navigationMenu,
+        {
+          path: '/moderation',
+          title: 'moderation',
+          icon: 'playlist_add_check',
+        },
+      ];
     },
   },
 };

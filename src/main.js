@@ -15,10 +15,10 @@ import Alert from './components/Shared/Alert';
 Vue.use(Vuetify, {
   iconfont: 'mdi',
   theme: {
-    main: '#292d33',
-    active: '#24abeb',
-    good: '#00c853',
-    bad: '#ed3838',
+    colorMain: '#292d33',
+    colorActive: '#24abeb',
+    colorGood: '#00c853',
+    colorBad: '#ed3838',
   },
 });
 

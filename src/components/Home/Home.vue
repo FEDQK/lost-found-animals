@@ -13,12 +13,12 @@
         @center_changed="setNewCenter">
         <map-info-window></map-info-window>
         <advert-marker :key="index" v-for="(markerData, index) in getAdverts()" :markerData="markerData"></advert-marker>
-        <marker-popup :latLng="latLng"></marker-popup>
+        <advert-popup :latLng="latLng"></advert-popup>
       </GmapMap>
       <v-flex xs12 align-center d-flex class="text-xs-center" v-if="loading">
         <v-progress-circular
           indeterminate
-          color="active"
+          color="colorActive"
           :width="7"
           :size="70"
         ></v-progress-circular>
@@ -29,7 +29,7 @@
 
 <script>
 import { gmapApi } from 'vue2-google-maps';
-import MarkerPopup from './MarkerPopup';
+import AdvertPopup from '../AdvertPopup';
 import AdvertMarker from './AdvertMarker';
 import MapInfoWindow from './MapInfoWindow';
 import AdvertFilter from './AdvertFilter';
@@ -37,7 +37,7 @@ import AdvertFilter from './AdvertFilter';
 export default {
   name: 'home',
   components: {
-    MarkerPopup,
+    AdvertPopup,
     AdvertMarker,
     MapInfoWindow,
     AdvertFilter,
@@ -47,7 +47,9 @@ export default {
   },
   computed: {
     adverts() {
-      return this.$store.getters.adverts;
+      return this.$store.getters.adverts.filter(
+        advert => advert.status === 'active',
+      );
     },
     filterAdvert() {
       return this.$store.getters.filterAdvert;
@@ -77,7 +79,7 @@ export default {
   methods: {
     setLatLng(event) {
       this.latLng = event.latLng;
-      this.$store.commit('showMarkerPopup', true);
+      this.$store.commit('showAdvertPopup', true);
     },
     setNewCenter(event) {
       this.mapConfig.dynamicCenter.lat = event.lat();
@@ -114,14 +116,13 @@ export default {
     },
     getAdverts() {
       let result = this.adverts;
-      const self = this;
       Object.keys(this.filterAdvert).forEach(key => {
-        if (self.filterAdvert[key] && self.filterAdvert[key] !== 'all') {
+        if (this.filterAdvert[key] && this.filterAdvert[key] !== 'all') {
           switch (key) {
             case 'id_pet_color':
               result = result.filter(
                 advert =>
-                  self.filterAdvert[key].every(
+                  this.filterAdvert[key].every(
                     color => advert[key].indexOf(color) >= 0,
                   )
                     ? advert
@@ -129,11 +130,11 @@ export default {
               );
               break;
             case 'radius':
-              result = self.filterRadius(result);
+              result = this.filterRadius(result);
               break;
             default:
               result = result.filter(
-                advert => advert[key] === self.filterAdvert[key],
+                advert => advert[key] === this.filterAdvert[key],
               );
               break;
           }

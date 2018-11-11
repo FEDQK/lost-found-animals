@@ -30,7 +30,7 @@ const store = new Vuex.Store({
     ],
     typeMarkers: ['find', 'lost'],
     adverts: [],
-    visibleMarkerPopup: false,
+    visibleAdvertPopup: false,
     petTypes: [],
     petBreeds: [],
     petColors: [],
@@ -111,6 +111,9 @@ const store = new Vuex.Store({
       if (payload.photoUrl) {
         advertInfo.photoUrl = payload.photoUrl;
       }
+      if (payload.status) {
+        advertInfo.status = payload.status;
+      }
     },
     deleteAdvert(state, id) {
       state.adverts.some((advert, index) => {
@@ -121,8 +124,8 @@ const store = new Vuex.Store({
         return false;
       });
     },
-    showMarkerPopup(state, payload) {
-      state.visibleMarkerPopup = payload;
+    showAdvertPopup(state, payload) {
+      state.visibleAdvertPopup = payload;
     },
     updateInfoWindow(state, payload) {
       if (payload.id) {
@@ -285,6 +288,7 @@ const store = new Vuex.Store({
         id_pet_color: advertData.petColor,
         id_pet_coloring: advertData.petColoring,
         dateCreate: new Date().toISOString(),
+        status: 'moderation',
         petAge: advertData.petAge,
         contactInfo: advertData.contactInfo,
         photoUrl: advertData.photoUrl,
@@ -335,6 +339,11 @@ const store = new Vuex.Store({
       }
       if (payload.photoUrl) {
         updateObj.photoUrl = payload.photoUrl;
+      }
+      if (payload.status) {
+        updateObj.status = payload.status;
+      } else {
+        updateObj.status = 'moderation';
       }
       firebase
         .database()
@@ -482,6 +491,9 @@ const store = new Vuex.Store({
       return state.adverts.filter(
         advert => advert.id_user === (state.user ? state.user.id : null),
       );
+    },
+    moderationAdverts(state) {
+      return state.adverts.filter(advert => advert.status === 'moderation');
     },
     petTypes(state) {
       return state.petTypes;
