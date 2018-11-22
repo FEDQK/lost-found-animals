@@ -28,7 +28,7 @@ const store = new Vuex.Store({
         icon: 'person',
       },
     ],
-    typeMarkers: ['find', 'lost'],
+    typeMarkers: ['find', 'lost', 'saw'],
     adverts: [],
     visibleAdvertPopup: false,
     petTypes: [],

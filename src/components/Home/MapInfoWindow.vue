@@ -3,6 +3,7 @@
     "en": {
       "find": "Found",
       "lost": "Lost",
+      "saw": "Saw",
       "typeMarker": "Marker Type:",
       "petType": "Kind of pet:",
       "petBreed": "Pet Breed:",
@@ -17,6 +18,7 @@
     "ua": {
       "find": "Знайдено",
       "lost": "Загублено",
+      "saw": "Побачено",
       "typeMarker": "Тип маркера:",
       "petType": "Вид тварини:",
       "petBreed": "Порода тварини:",
@@ -31,6 +33,7 @@
     "ru": {
       "find": "Найдено",
       "lost": "Потеряно",
+      "saw": "Увидено",
       "typeMarker": "Тип маркера:",
       "petType": "Вид животного:",
       "petBreed": "Порода животного:",
