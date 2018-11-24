@@ -9,7 +9,6 @@
       "petType": "Kind of pet",
       "petBreed": "Pet Breed",
       "petAge": "Pet Age",
-      "petAgeSuffix": "yr",
       "petColor": "Pet color",
       "petColoring": "Pet coloring",
       "radius": "Search radius",
@@ -23,8 +22,7 @@
       "typeMarker": "Тип маркера",
       "petType": "Вид тварини",
       "petBreed": "Порода тварини",
-      "petAge": "Вік тварин:",
-      "petAgeSuffix": "р.",
+      "petAge": "Вік тварин",
       "petColor": "Колір тварини",
       "petColoring": "Окрас тварини",
       "radius": "Радіус пошуку",
@@ -39,7 +37,6 @@
       "petType": "Вид животного",
       "petBreed": "Порода животного",
       "petAge": "Возраст животного",
-      "petAgeSuffix": "г.",
       "petColor": "Цвет животного",
       "petColoring": "Окрас животного",
       "radius": "Радиус поиска",
@@ -75,7 +72,12 @@
       ></v-select>
     </v-flex>
     <v-flex xs12>
-      <v-text-field :mask="maskPetAge" v-model="filterAdvert.petAge" :label="$t('petAge')" :suffix="$t('petAgeSuffix')" @change="onUpdateFilter('petAge', $event)"></v-text-field>
+      <v-select
+        :items="petAges"
+        v-model="filterAdvert.id_pet_age"
+        :label="$t('petAge')"
+        @change="onUpdateFilter('id_pet_age', $event)"
+      ></v-select>
     </v-flex>
     <v-flex xs12>
       <v-select
@@ -125,6 +127,11 @@ export default {
       this.addOptionAll(result);
       return result;
     },
+    petAges() {
+      const result = this.$store.getters.dataOfTableForSelect('petAges');
+      this.addOptionAll(result);
+      return result;
+    },
     filterAdvert() {
       return this.$store.getters.filterAdvert;
     },
@@ -132,7 +139,6 @@ export default {
   data() {
     return {
       petBreeds: [],
-      maskPetAge: '##',
       maskRadius: '#####',
     };
   },

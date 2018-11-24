@@ -10,7 +10,6 @@
       "petType": "Kind of pet:",
       "petBreed": "Pet Breed:",
       "petAge": "Pet Age:",
-      "petAgeSuffix": "yr",
       "petColor": "Pet color:",
       "petColoring": "Pet coloring:",
       "contactInfo": "Contact Information:",
@@ -30,7 +29,6 @@
       "petType": "Вид тварини:",
       "petBreed": "Порода тварини:",
       "petAge": "Вік тварини:",
-      "petAgeSuffix": "р.",
       "petColor": "Колір тварини:",
       "petColoring": "Окрас тварини:",
       "contactInfo": "Контактна інформація:",
@@ -50,7 +48,6 @@
       "petType": "Вид животного:",
       "petBreed": "Порода животного:",
       "petAge": "Возраст животного:",
-      "petAgeSuffix": "г.",
       "petColor": "Цвет животного:",
       "petColoring": "Окрас животного:",
       "contactInfo": "Контактная информация:",
@@ -74,7 +71,7 @@
       <v-card-text><b>{{$t('typeMarker')}}</b> {{$t(advertData.typeMarker)}}</v-card-text>
       <v-card-text><b>{{$t('petType')}}</b> {{namePetType(advertData.id_pet_type)}}</v-card-text>
       <v-card-text><b>{{$t('petBreed')}}</b> {{namePetBreed(advertData.id_pet_breed)}}</v-card-text>
-      <v-card-text><b>{{$t('petAge')}}</b> {{`${advertData.petAge} ${$t('petAgeSuffix')}`}}</v-card-text>
+      <v-card-text><b>{{$t('petAge')}}</b> {{namePetAge(advertData.id_pet_age)}}</v-card-text>
       <v-card-text><b>{{$t('petColor')}}</b> {{namePetColor(advertData.id_pet_color)}}</v-card-text>
       <v-card-text><b>{{$t('petColoring')}}</b> {{namePetColoring(advertData.id_pet_coloring)}}</v-card-text>
       <v-card-text><b>{{$t('contactInfo')}}</b> {{advertData.contactInfo}}</v-card-text>
@@ -107,6 +104,9 @@ export default {
     },
     namePetColoring(id) {
       return this.$store.getters.namePetColorings(id);
+    },
+    namePetAge(id) {
+      return this.$store.getters.namePetAges(id);
     },
     getDate(date) {
       return new Date(date).toLocaleDateString();

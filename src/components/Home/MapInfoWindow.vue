@@ -4,11 +4,11 @@
       "find": "Found",
       "lost": "Lost",
       "saw": "Saw",
+      "dateCreate": "Date of creation:",
       "typeMarker": "Marker Type:",
       "petType": "Kind of pet:",
       "petBreed": "Pet Breed:",
       "petAge": "Pet Age:",
-      "petAgeSuffix": "yr",
       "petColor": "Pet color:",
       "petColoring": "Pet coloring:",
       "contactInfo": "Contact Information:",
@@ -19,11 +19,11 @@
       "find": "Знайдено",
       "lost": "Загублено",
       "saw": "Побачено",
+      "dateCreate": "Дата створення:",
       "typeMarker": "Тип маркера:",
       "petType": "Вид тварини:",
       "petBreed": "Порода тварини:",
       "petAge": "Вік тварини:",
-      "petAgeSuffix": "р.",
       "petColor": "Колір тварини:",
       "petColoring": "Окрас тварини:",
       "contactInfo": "Контактна інформація:",
@@ -34,11 +34,11 @@
       "find": "Найдено",
       "lost": "Потеряно",
       "saw": "Увидено",
+      "dateCreate": "Дата создания:",
       "typeMarker": "Тип маркера:",
       "petType": "Вид животного:",
       "petBreed": "Порода животного:",
       "petAge": "Возраст животного:",
-      "petAgeSuffix": "г.",
       "petColor": "Цвет животного:",
       "petColoring": "Окрас животного:",
       "contactInfo": "Контактная информация:",
@@ -51,7 +51,7 @@
 <template>
   <gmap-info-window :options="infoWindowOptions" :position="infoWindow.position" :opened="infoWindow.isOpen" @closeclick="onCloseInfoWindow" v-if="infoWindow.isOpen">
     <v-card>
-      <v-card-media class="advert-photo" :src="infoWindow.photoUrl" height="200px" contain>
+      <v-card-media class="advert-photo" :src="infoWindow.photoUrl" :height="getSizeImage" contain>
       </v-card-media>
       <v-card-text class="info-window-text">
         <b>{{$t('typeMarker')}}</b> {{$t(infoWindow.typeMarker)}}
@@ -63,7 +63,7 @@
         <b>{{$t('petBreed')}}</b> {{namePetBreeds}}
       </v-card-text>
       <v-card-text class="info-window-text">
-        <b>{{$t('petAge')}}</b> {{`${infoWindow.petAge} ${$t('petAgeSuffix')}`}}
+        <b>{{$t('petAge')}}</b> {{namePetAges}}
       </v-card-text>
       <v-card-text class="info-window-text">
         <b>{{$t('petColor')}}</b> {{namePetColors}}
@@ -74,10 +74,13 @@
       <v-card-text class="info-window-text">
         <b>{{$t('contactInfo')}}</b> {{infoWindow.contactInfo}}
       </v-card-text>
+      <v-card-text class="date-create">
+        <v-icon color="colorMain" size="22">access_time</v-icon> <span>{{`${getDate(infoWindow.dateCreate)}, ${getTime(infoWindow.dateCreate)}`}}</span>
+      </v-card-text>
       <v-card-actions class="form-buttons" v-if="checkUser">
         <v-layout justify-center>
-            <v-btn color="info" depressed @click="onEditAdvert">{{$t('buttonEditAdvert')}}</v-btn>
-            <v-btn color="error" depressed @click="onDeleteAdvert">{{$t('buttonDeleteAdvert')}}</v-btn>
+          <v-btn color="info" depressed @click="onEditAdvert">{{$t('buttonEditAdvert')}}</v-btn>
+          <v-btn color="error" depressed @click="onDeleteAdvert">{{$t('buttonDeleteAdvert')}}</v-btn>
         </v-layout>
       </v-card-actions>
     </v-card>
@@ -108,11 +111,20 @@ export default {
         this.infoWindow.id_pet_coloring,
       );
     },
+    namePetAges() {
+      return this.$store.getters.namePetAges(this.infoWindow.id_pet_age);
+    },
     checkUser() {
       return (
         this.user &&
         (this.user.id === this.infoWindow.id_user || this.user.role === 'admin')
       );
+    },
+    getSizeImage() {
+      if (window.innerWidth < 450) {
+        return '100px';
+      }
+      return '200px';
     },
   },
   data() {
@@ -120,9 +132,8 @@ export default {
       infoWindowOptions: {
         pixelOffset: {
           width: 0,
-          height: -40,
+          height: -45,
         },
-        maxWidth: 350,
       },
     };
   },
@@ -140,6 +151,12 @@ export default {
       this.$bus.$emit('editAdvert');
       this.$store.commit('showAdvertPopup', true);
     },
+    getDate(date) {
+      return new Date(date).toLocaleDateString();
+    },
+    getTime(date) {
+      return new Date(date).toLocaleTimeString();
+    },
   },
 };
 </script>
@@ -150,5 +167,17 @@ export default {
 }
 .info-window-text > b {
   font-weight: bold;
+}
+.date-create {
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+.date-create > span {
+  padding-left: 5px;
+  font-size: 12px;
+}
+.form-buttons {
+  padding: 4px 0;
 }
 </style>

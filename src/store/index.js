@@ -35,6 +35,7 @@ const store = new Vuex.Store({
     petBreeds: [],
     petColors: [],
     petColorings: [],
+    petAges: [],
     infoWindow: {
       position: null,
       isOpen: false,
@@ -45,16 +46,17 @@ const store = new Vuex.Store({
       id_pet_breed: null,
       id_pet_color: null,
       id_pet_coloring: null,
-      petAge: null,
+      id_pet_age: null,
       contactInfo: null,
       photoUrl: null,
+      dateCreate: null,
     },
     dataEditAdvert: null,
     filterAdvert: {
       typeMarker: 'all',
       id_pet_type: 'all',
       id_pet_breed: 'all',
-      petAge: null,
+      id_pet_age: 'all',
       id_pet_color: null,
       id_pet_coloring: 'all',
       radius: null,
@@ -79,6 +81,9 @@ const store = new Vuex.Store({
     setLoadedPetColorings(state, payload) {
       state.petColorings = payload;
     },
+    setLoadedPetAges(state, payload) {
+      state.petAges = payload;
+    },
     createAdvert(state, payload) {
       state.adverts.push(payload);
     },
@@ -102,8 +107,8 @@ const store = new Vuex.Store({
       if (payload.id_pet_coloring) {
         advertInfo.id_pet_coloring = payload.id_pet_coloring;
       }
-      if (payload.petAge) {
-        advertInfo.petAge = payload.petAge;
+      if (payload.id_pet_age) {
+        advertInfo.id_pet_age = payload.id_pet_age;
       }
       if (payload.contactInfo) {
         advertInfo.contactInfo = payload.contactInfo;
@@ -152,8 +157,8 @@ const store = new Vuex.Store({
       if (payload.id_pet_coloring) {
         state.infoWindow.id_pet_coloring = payload.id_pet_coloring;
       }
-      if (payload.petAge) {
-        state.infoWindow.petAge = payload.petAge;
+      if (payload.id_pet_age) {
+        state.infoWindow.id_pet_age = payload.id_pet_age;
       }
       if (payload.contactInfo) {
         state.infoWindow.contactInfo = payload.contactInfo;
@@ -163,6 +168,9 @@ const store = new Vuex.Store({
       }
       if (payload.position) {
         state.infoWindow.position = payload.position;
+      }
+      if (payload.dateCreate) {
+        state.infoWindow.dateCreate = payload.dateCreate;
       }
     },
     editAdvert(state, payload) {
@@ -259,6 +267,22 @@ const store = new Vuex.Store({
           commit('setLoading', false);
         });
     },
+    loadPetAges({ commit }) {
+      commit('setLoading', true);
+      firebase
+        .database()
+        .ref('pet_ages')
+        .once('value')
+        .then(data => {
+          commit('setLoadedPetAges', this.getDataOfTable(data));
+          commit('setLoading', false);
+        })
+        .catch(err => {
+          // eslint-disable-next-line
+          console.log(err);
+          commit('setLoading', false);
+        });
+    },
     loadAdverts({ commit }) {
       commit('setLoading', true);
       firebase
@@ -289,7 +313,7 @@ const store = new Vuex.Store({
         id_pet_coloring: advertData.petColoring,
         dateCreate: new Date().toISOString(),
         status: 'moderation',
-        petAge: advertData.petAge,
+        id_pet_age: advertData.petAge,
         contactInfo: advertData.contactInfo,
         photoUrl: advertData.photoUrl,
         position: {
@@ -331,8 +355,8 @@ const store = new Vuex.Store({
       if (payload.id_pet_coloring) {
         updateObj.id_pet_coloring = payload.id_pet_coloring;
       }
-      if (payload.petAge) {
-        updateObj.petAge = payload.petAge;
+      if (payload.id_pet_age) {
+        updateObj.id_pet_age = payload.id_pet_age;
       }
       if (payload.contactInfo) {
         updateObj.contactInfo = payload.contactInfo;
@@ -507,6 +531,9 @@ const store = new Vuex.Store({
     petColorings(state) {
       return state.petColorings;
     },
+    petAges(state) {
+      return state.petAges;
+    },
     typeMarkers(state) {
       return state.typeMarkers;
     },
@@ -554,6 +581,10 @@ const store = new Vuex.Store({
         state.petColorings.find(petColoring => petColoring.id === value)[
           state.locale
         ].name;
+    },
+    namePetAges(state) {
+      return value =>
+        state.petAges.find(petAge => petAge.id === value)[state.locale].name;
     },
     dataEditAdvert(state) {
       return state.dataEditAdvert;

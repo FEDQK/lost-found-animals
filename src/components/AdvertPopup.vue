@@ -3,12 +3,12 @@
     "en": {
       "headlineUpdate": "Update advert",
       "headlineCreate": "Add advert",
-      "labelFind": "Found",
-      "labelLost": "Lost",
+      "labelFIND": "Found",
+      "labelLOST": "Lost",
+      "labelSAW": "Saw",
       "labelPetType": "Kind of pet",
       "labelPetBreed": "Pet breed",
       "labelPetAge": "Age og pet",
-      "labelPetAgeSuffix": "yr",
       "labelPetColor": "Pet color",
       "labelPetColoring": "Pet coloring",
       "labelContactInfo": "Contact Information",
@@ -28,12 +28,12 @@
     "ua": {
       "headlineUpdate": "Оновити оголошення",
       "headlineCreate": "Додати оголошення",
-      "labelFind": "Знайдена",
-      "labelLost": "Загублена",
+      "labelFIND": "Знайдена",
+      "labelLOST": "Загублена",
+      "labelSAW": "Побачена",
       "labelPetType": "Вид тварини",
       "labelPetBreed": "Порода тварини",
       "labelPetAge": "Вік тварини",
-      "labelPetAgeSuffix": "р.",
       "labelPetColor": "Колір тварини",
       "labelPetColoring": "Окраса тварини",
       "labelContactInfo": "Контактна інформація",
@@ -53,12 +53,12 @@
     "ru": {
       "headlineUpdate": "Обновить обявление",
       "headlineCreate": "Добавить обявление",
-      "labelFind": "Найдена",
-      "labelLost": "Потерянная",
+      "labelFIND": "Найдена",
+      "labelLOST": "Потерянная",
+      "labelSAW": "Увидена",
       "labelPetType": "Вид животного",
       "labelPetBreed": "Порода животного",
       "labelPetAge": "Возраст животного",
-      "labelPetAgeSuffix": "г.",
       "labelPetColor": "Цвет животного",
       "labelPetColoring": "Окраса животного",
       "labelContactInfo": "Контактная информация",
@@ -88,8 +88,7 @@
             <v-layout wrap>
               <v-flex xs12>
                 <v-radio-group class="type-marker" v-model="typeMarker">
-                  <v-radio :label="$t('labelFind')" :value="'find'" color="primary"></v-radio>
-                  <v-radio :label="$t('labelLost')" :value="'lost'" color="primary"></v-radio>
+                  <v-radio v-for="(typeMarker, index) in typeMarkers" :key="index" :label="$t(`label${typeMarker.toUpperCase()}`)" :value="typeMarker" color="primary"></v-radio>
                 </v-radio-group>
               </v-flex>
               <v-flex xs12>
@@ -112,7 +111,13 @@
                 ></v-select>
               </v-flex>
               <v-flex>
-                <v-text-field required :rules="petAgeRules" :mask="maskPetAge" v-model="petAge" :label="$t('labelPetAge')" :suffix="$t('labelPetAgeSuffix')"></v-text-field>
+                <v-select
+                  :items="petAges"
+                  v-model="petAge"
+                  :label="$t('labelPetAge')"
+                  required
+                  :rules="petAgeRules"
+                ></v-select>
               </v-flex>
               <v-flex xs12>
                 <v-select
@@ -180,7 +185,7 @@ export default {
         this.typeMarker = dataEditAdvert.typeMarker;
         this.photoUrl = dataEditAdvert.photoUrl;
         this.contactInfo = dataEditAdvert.contactInfo;
-        this.petAge = dataEditAdvert.petAge;
+        this.petAge = dataEditAdvert.id_pet_age;
         this.editAdvertId = dataEditAdvert.id;
         this.loadedPetBreeds(this.petType);
         this.isEditMode = true;
@@ -199,7 +204,6 @@ export default {
       contactInfo: '',
       petAge: null,
       isValidForm: true,
-      maskPetAge: '##',
       isEditMode: false,
       editAdvertId: null,
       petAgeRules: [v => !!v || this.$t('petAgeRules')],
@@ -215,6 +219,9 @@ export default {
     active() {
       return this.$store.state.visibleAdvertPopup;
     },
+    typeMarkers() {
+      return this.$store.getters.typeMarkers;
+    },
     petTypes() {
       return this.$store.getters.dataOfTableForSelect('petTypes');
     },
@@ -224,6 +231,9 @@ export default {
     petColorings() {
       return this.$store.getters.dataOfTableForSelect('petColorings');
     },
+    petAges() {
+      return this.$store.getters.dataOfTableForSelect('petAges');
+    },
   },
   methods: {
     createMarker() {
@@ -232,7 +242,7 @@ export default {
           typeMarker: this.typeMarker,
           petType: this.petType,
           petBreed: this.petBreed,
-          petAge: String(Number(this.petAge)),
+          petAge: this.petAge,
           petColor: this.petColor,
           petColoring: this.petColoring,
           contactInfo: this.contactInfo,
@@ -250,7 +260,7 @@ export default {
           typeMarker: this.typeMarker,
           id_pet_type: this.petType,
           id_pet_breed: this.petBreed,
-          petAge: String(Number(this.petAge)),
+          id_pet_age: this.petAge,
           id_pet_color: this.petColor,
           id_pet_coloring: this.petColoring,
           contactInfo: this.contactInfo,
