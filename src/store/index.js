@@ -320,6 +320,7 @@ const store = new Vuex.Store({
           lat: advertData.position.lat(),
           lng: advertData.position.lng(),
         },
+        previousPosition: advertData.previousPosition,
       };
       firebase
         .database()
@@ -510,6 +511,9 @@ const store = new Vuex.Store({
     },
     adverts(state) {
       return state.adverts;
+    },
+    activeAdverts(state) {
+      return state.adverts.filter(advert => advert.status === 'active');
     },
     userAdverts(state) {
       return state.adverts.filter(

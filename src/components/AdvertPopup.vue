@@ -164,6 +164,9 @@
 </template>
 
 <script>
+import { gmapApi } from 'vue2-google-maps';
+import utils from '../utils';
+
 export default {
   name: 'advert-popup',
   props: {
@@ -216,6 +219,9 @@ export default {
     };
   },
   computed: {
+    adverts() {
+      return this.$store.getters.activeAdverts;
+    },
     active() {
       return this.$store.state.visibleAdvertPopup;
     },
@@ -234,8 +240,51 @@ export default {
     petAges() {
       return this.$store.getters.dataOfTableForSelect('petAges');
     },
+    google: gmapApi,
   },
   methods: {
+    getAdvertsInRadius(newAdvert) {
+      const radius = 5;
+      return this.adverts.filter(advert =>
+        utils.checkIncludesMarkerInRadius(
+          this.google,
+          newAdvert.position,
+          advert.position,
+          radius,
+        ),
+      );
+    },
+    compareAdvertsColors(newAdvert, advert) {
+      return newAdvert.petColor.every(
+        petColor => advert.id_pet_color.indexOf(petColor) >= 0,
+      );
+    },
+    getSuitableAdverts(newAdvert) {
+      return this.getAdvertsInRadius(newAdvert).filter(
+        advert =>
+          advert.id_pet_type === newAdvert.petType &&
+          advert.id_pet_breed === newAdvert.petBreed &&
+          advert.id_pet_coloring === newAdvert.petColoring &&
+          advert.id_pet_age === newAdvert.petAge &&
+          this.compareAdvertsColors(newAdvert, advert),
+      );
+    },
+    checkSawAdvert(newAdvert) {
+      if (newAdvert.typeMarker === 'saw') {
+        return this.getSuitableAdverts(newAdvert);
+      }
+      return false;
+    },
+    getPreviousPosition(newAdvert) {
+      const resultCheckSawAdvert = this.checkSawAdvert(newAdvert);
+      if (resultCheckSawAdvert && resultCheckSawAdvert.length > 0) {
+        if (resultCheckSawAdvert.length > 1) {
+          resultCheckSawAdvert.sort(utils.compareDateCreate);
+        }
+        return resultCheckSawAdvert[0].position;
+      }
+      return null;
+    },
     createMarker() {
       if (this.$refs.form.validate()) {
         const newMarker = {
@@ -249,6 +298,7 @@ export default {
           photoUrl: this.photoUrl,
           position: this.latLng,
         };
+        newMarker.previousPosition = this.getPreviousPosition(newMarker);
         this.$store.dispatch('createAdvert', newMarker);
         this.hidePopup();
       }
