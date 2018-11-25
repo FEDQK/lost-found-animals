@@ -29,6 +29,7 @@
 
 <script>
 import { gmapApi } from 'vue2-google-maps';
+import utils from '../../utils';
 import AdvertPopup from '../AdvertPopup';
 import AdvertMarker from './AdvertMarker';
 import MapInfoWindow from './MapInfoWindow';
@@ -47,9 +48,7 @@ export default {
   },
   computed: {
     adverts() {
-      return this.$store.getters.adverts.filter(
-        advert => advert.status === 'active',
-      );
+      return this.$store.getters.activeAdverts;
     },
     filterAdvert() {
       return this.$store.getters.filterAdvert;
@@ -84,20 +83,6 @@ export default {
     setNewCenter(event) {
       this.mapConfig.dynamicCenter.lat = event.lat();
       this.mapConfig.dynamicCenter.lng = event.lng();
-    },
-    getDistanceBetween(markerPosition) {
-      const center = {
-        lat: () => this.mapConfig.dynamicCenter.lat,
-        lng: () => this.mapConfig.dynamicCenter.lng,
-      };
-      const marker = {
-        lat: () => markerPosition.lat,
-        lng: () => markerPosition.lng,
-      };
-      return this.google.maps.geometry.spherical.computeDistanceBetween(
-        center,
-        marker,
-      );
     },
     getCurrentLocation() {
       if (navigator.geolocation) {
@@ -143,15 +128,14 @@ export default {
       return result;
     },
     filterRadius(adverts) {
-      return adverts.filter(advert => {
-        if (
-          this.getDistanceBetween(advert.position) / 1000 <=
-          Number(this.filterAdvert.radius)
-        ) {
-          return advert;
-        }
-        return false;
-      });
+      return adverts.filter(advert =>
+        utils.checkIncludesMarkerInRadius(
+          this.google,
+          this.mapConfig.dynamicCenter,
+          advert.position,
+          this.filterAdvert.radius,
+        ),
+      );
     },
   },
 };
