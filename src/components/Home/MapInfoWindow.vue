@@ -143,7 +143,7 @@ export default {
     },
     onDeleteAdvert() {
       this.onCloseInfoWindow();
-      this.$store.dispatch('deleteAdvert', this.infoWindow.id);
+      this.$store.dispatch('deleteAdvert', this.infoWindow);
     },
     onEditAdvert() {
       this.onCloseInfoWindow();

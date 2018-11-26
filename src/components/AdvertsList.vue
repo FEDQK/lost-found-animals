@@ -36,7 +36,7 @@
             <v-layout justify-start v-else>
               <v-flex>
                 <v-btn color="info" depressed @click="onOpenEditPopup(advert)">{{ $t('buttonUpdateAdvert') }}</v-btn>
-                <v-btn color="error" depressed @click="onDeleteAdvert(advert.id)">{{ $t('buttonDeleteAdvert') }}</v-btn>
+                <v-btn color="error" depressed @click="onDeleteAdvert(advert)">{{ $t('buttonDeleteAdvert') }}</v-btn>
               </v-flex>
             </v-layout>
           </v-card-actions>
@@ -76,9 +76,9 @@ export default {
       this.$bus.$emit('editAdvert');
       this.$store.commit('showAdvertPopup', true);
     },
-    onDeleteAdvert(id) {
+    onDeleteAdvert(advert) {
       this.onClosePopup();
-      this.$store.dispatch('deleteAdvert', id);
+      this.$store.dispatch('deleteAdvert', advert);
     },
     onApproveAdvert(id) {
       this.$store.dispatch('updateAdvert', { id, status: 'active' });

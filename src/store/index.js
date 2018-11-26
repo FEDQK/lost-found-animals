@@ -315,32 +315,55 @@ const store = new Vuex.Store({
         status: 'moderation',
         id_pet_age: advertData.petAge,
         contactInfo: advertData.contactInfo,
-        photoUrl: advertData.photoUrl,
         position: {
           lat: advertData.position.lat(),
           lng: advertData.position.lng(),
         },
         previousPosition: advertData.previousPosition,
       };
+      let key;
+      let photoUrl;
       firebase
         .database()
         .ref('adverts')
         .push(advert)
         .then(data => data.key)
-        .then(key => {
-          advert.id = key;
-          commit('createAdvert', advert);
-          dispatch('updateAdvert', { id: key });
+        .then(generatedKey => {
+          key = generatedKey;
+          const filename = advertData.image.name;
+          const ext = filename.slice(filename.lastIndexOf('.'));
+          return firebase
+            .storage()
+            .ref(`adverts/${key}.${ext}`)
+            .put(advertData.image);
+        })
+        .then(fileData =>
+          firebase
+            .storage()
+            .ref(fileData.metadata.fullPath)
+            .getDownloadURL(),
+        )
+        .then(url => {
+          photoUrl = url;
+          return firebase
+            .database()
+            .ref('adverts')
+            .child(key)
+            .update({ photoUrl, id: key });
+        })
+        .then(() => {
+          commit('createAdvert', { ...advert, id: key, photoUrl });
         })
         .catch(err => {
           // eslint-disable-next-line
           console.log(err);
         });
     },
-    updateAdvert({ commit }, payload) {
+    updateAdvert({ commit, getters }, payload) {
       const updateObj = {
         id: payload.id,
       };
+      let photoUrl;
       if (payload.typeMarker) {
         updateObj.typeMarker = payload.typeMarker;
       }
@@ -362,9 +385,6 @@ const store = new Vuex.Store({
       if (payload.contactInfo) {
         updateObj.contactInfo = payload.contactInfo;
       }
-      if (payload.photoUrl) {
-        updateObj.photoUrl = payload.photoUrl;
-      }
       if (payload.status) {
         updateObj.status = payload.status;
       } else {
@@ -376,6 +396,51 @@ const store = new Vuex.Store({
         .child(payload.id)
         .update(updateObj)
         .then(() => {
+          if (payload.image) {
+            commit('setLoading', true);
+            const oldPhotoUrl = getters.adverts.find(
+              advert => advert.id === payload.id,
+            ).photoUrl;
+            const ext = oldPhotoUrl.slice(
+              oldPhotoUrl.lastIndexOf('.'),
+              oldPhotoUrl.lastIndexOf('?'),
+            );
+            return firebase
+              .storage()
+              .ref(`adverts/${payload.id}.${ext}`)
+              .delete()
+              .then(() => {
+                const filename = payload.image.name;
+                const newFileExt = filename.slice(filename.lastIndexOf('.'));
+                return firebase
+                  .storage()
+                  .ref(`adverts/${payload.id}.${newFileExt}`)
+                  .put(payload.image);
+              })
+              .then(fileData =>
+                firebase
+                  .storage()
+                  .ref(fileData.metadata.fullPath)
+                  .getDownloadURL(),
+              )
+              .then(url => {
+                photoUrl = url;
+                updateObj.photoUrl = photoUrl;
+                firebase
+                  .database()
+                  .ref('adverts')
+                  .child(payload.id)
+                  .update({ photoUrl });
+              })
+              .catch(error => {
+                // eslint-disable-next-line
+                console.log(error);
+              });
+          }
+          return true;
+        })
+        .then(() => {
+          commit('setLoading', false);
           commit('updateAdvert', updateObj);
         })
         .catch(error => {
@@ -383,13 +448,23 @@ const store = new Vuex.Store({
           console.log(error);
         });
     },
-    deleteAdvert({ commit }, id) {
+    deleteAdvert({ commit, getters }, dataAdvert) {
       firebase
         .database()
-        .ref(`adverts/${id}`)
+        .ref(`adverts/${dataAdvert.id}`)
         .remove()
         .then(() => {
-          commit('deleteAdvert', id);
+          const ext = dataAdvert.photoUrl.slice(
+            dataAdvert.photoUrl.lastIndexOf('.'),
+            dataAdvert.photoUrl.lastIndexOf('?'),
+          );
+          return firebase
+            .storage()
+            .ref(`adverts/${dataAdvert.id}.${ext}`)
+            .delete();
+        })
+        .then(() => {
+          commit('deleteAdvert', dataAdvert.id);
         })
         .catch(err => {
           // eslint-disable-next-line

@@ -12,7 +12,7 @@
       "labelPetColor": "Pet color",
       "labelPetColoring": "Pet coloring",
       "labelContactInfo": "Contact Information",
-      "labelPhotoUrl": "Photo",
+      "labelPhotoUrl": "Upload photo",
       "buttonCreateMarker": "Yes",
       "buttonCancelCreateMarker": "No",
       "buttonUpdateAdvert": "Update",
@@ -37,7 +37,7 @@
       "labelPetColor": "Колір тварини",
       "labelPetColoring": "Окраса тварини",
       "labelContactInfo": "Контактна інформація",
-      "labelPhotoUrl": "Фотографія",
+      "labelPhotoUrl": "Завантажити фотографію",
       "buttonCreateMarker": "Так",
       "buttonCancelCreateMarker": "Hi",
       "buttonUpdateAdvert": "Оновити",
@@ -62,7 +62,7 @@
       "labelPetColor": "Цвет животного",
       "labelPetColoring": "Окраса животного",
       "labelContactInfo": "Контактная информация",
-      "labelPhotoUrl": "Фотография",
+      "labelPhotoUrl": "Загрузить фотографию",
       "buttonCreateMarker": "Да",
       "buttonCancelCreateMarker": "Нет",
       "buttonUpdateAdvert": "Обновить",
@@ -142,8 +142,14 @@
               <v-flex xs12>
                 <v-text-field required :rows="3" :rules="contactInfoRules" v-model="contactInfo" :label="$t('labelContactInfo')" textarea no-resize></v-text-field>
               </v-flex>
+              <v-flex xs12 d-flex>
+                <!-- <v-text-field required :rules="photoUrlRules" v-model="photoUrl" :label="$t('labelPhotoUrl')"></v-text-field> -->
+                <v-btn raised color="primary" @click="onPickFile">{{$t('labelPhotoUrl')}}</v-btn>
+                <input type="file" style="display: none;" ref="fileInput" accept="image/*" @change="onFilePicked">
+              </v-flex>
               <v-flex xs12>
-                <v-text-field required :rules="photoUrlRules" v-model="photoUrl" :label="$t('labelPhotoUrl')"></v-text-field>
+                <span class="text-rule" v-show="!photoUrlRules">{{$t('photoUrlRules')}}</span>
+                <img :src="photoUrl" height="150">
               </v-flex>
             </v-layout>
           </v-container>
@@ -206,12 +212,13 @@ export default {
       photoUrl: '',
       contactInfo: '',
       petAge: null,
+      image: null,
       isValidForm: true,
       isEditMode: false,
       editAdvertId: null,
       petAgeRules: [v => !!v || this.$t('petAgeRules')],
       contactInfoRules: [v => !!v || this.$t('contactInfoRules')],
-      photoUrlRules: [v => !!v || this.$t('photoUrlRules')],
+      photoUrlRules: true,
       petTypeRules: [v => !!v || this.$t('petTypeRules')],
       petBreedRules: [v => !!v || this.$t('petBreedRules')],
       petColorRules: [v => v.length > 0 || this.$t('petColorRules')],
@@ -287,6 +294,10 @@ export default {
     },
     createMarker() {
       if (this.$refs.form.validate()) {
+        if (!this.image) {
+          this.photoUrlRules = false;
+          return;
+        }
         const newMarker = {
           typeMarker: this.typeMarker,
           petType: this.petType,
@@ -295,7 +306,7 @@ export default {
           petColor: this.petColor,
           petColoring: this.petColoring,
           contactInfo: this.contactInfo,
-          photoUrl: this.photoUrl,
+          image: this.image,
           position: this.latLng,
         };
         newMarker.previousPosition = this.getPreviousPosition(newMarker);
@@ -314,7 +325,7 @@ export default {
           id_pet_color: this.petColor,
           id_pet_coloring: this.petColoring,
           contactInfo: this.contactInfo,
-          photoUrl: this.photoUrl,
+          image: this.image,
         };
         this.$store.dispatch('updateAdvert', newAdvertInfo);
         this.onCancelEdit();
@@ -340,6 +351,25 @@ export default {
         this.isEditMode = false;
       }, 200);
     },
+    onPickFile() {
+      this.$refs.fileInput.click();
+    },
+    onFilePicked(event) {
+      const files = event.target.files;
+      const filename = files[0].name;
+      if (filename.lastIndexOf('.') <= 0) {
+        // eslint-disable-next-line
+        alert('Please add a valid fiel!');
+      } else {
+        const fileReader = new FileReader();
+        fileReader.addEventListener('load', () => {
+          this.photoUrl = fileReader.result;
+        });
+        fileReader.readAsDataURL(files[0]);
+        this.image = files[0];
+        this.photoUrlRules = true;
+      }
+    },
   },
 };
 </script>
@@ -360,5 +390,10 @@ export default {
 }
 .content {
   padding-bottom: 0;
+}
+.text-rule {
+  color: #ff5252;
+  font-size: 12px;
+  margin: 0 8px;
 }
 </style>
