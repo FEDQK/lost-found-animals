@@ -288,18 +288,12 @@ const store = new Vuex.Store({
       firebase
         .database()
         .ref('adverts')
-        .once('value')
-        .then(data => {
+        .on('value', data => {
           const dataObject = data.val();
           const dataArray = Object.keys(dataObject).map(
             advertId => dataObject[advertId],
           );
           commit('setLoadedAdverts', dataArray);
-          commit('setLoading', false);
-        })
-        .catch(err => {
-          // eslint-disable-next-line
-          console.log(err);
           commit('setLoading', false);
         });
     },
