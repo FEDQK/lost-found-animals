@@ -345,9 +345,6 @@ const store = new Vuex.Store({
             .child(key)
             .update({ photoUrl, id: key });
         })
-        .then(() => {
-          commit('createAdvert', { ...advert, id: key, photoUrl });
-        })
         .catch(err => {
           // eslint-disable-next-line
           console.log(err);
